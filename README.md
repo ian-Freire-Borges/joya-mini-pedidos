@@ -39,13 +39,13 @@ docker compose up -d backend
 docker compose logs --tail 40 backend
 ```
 
-As etapas acima já foram executadas por Ian; saídas conferidas na conversa. O próximo comando pendente é:
+As etapas acima foram executadas por Ian. O build abaixo também passou, incluindo npm test, TypeScript e Vite:
 
 ```powershell
 docker compose build frontend
 ```
 
-Somente após passar: `docker compose up -d frontend`. Endereço previsto: http://localhost:8080 (ainda não conferido em execução). `JOYA_PORT` altera essa porta. SQL não publica porta no host; dados ficam em volume persistente. Não apagar volumes para diagnóstico.
+Frontend iniciado com `docker compose up -d frontend`; endereço local http://localhost:8080 conferido no navegador com SQL Server real. `JOYA_PORT` altera essa porta. SQL não publica porta no host; dados ficam em volume persistente. Não apagar volumes para diagnóstico.
 
 O Compose contém senha de demonstração local, substituível por JOYA_SQL_PASSWORD. Não é configuração de produção. API ainda usa sa; usuário dedicado está pendente. SQL Server Developer é para desenvolvimento/testes. Sem autenticação; manter ambiente local.
 
@@ -61,9 +61,9 @@ Exemplo de corpo (não executado nesta documentação):
 
 ## Verificação e limitações
 
-Comandos previstos: `dotnet test tests/UnitTests` e `npm --prefix frontend run build`. O terminal do agente não acessa o daemon Docker e falhou no DNS de npm/NuGet. O PowerShell do usuário acessa Docker; o build da API baixou pacotes e concluiu. Isso não equivale a testes aprovados.
+Comandos previstos: `dotnet test tests/UnitTests` e `npm --prefix frontend run build`. O terminal do agente não acessa o daemon Docker e falhou no DNS de npm/NuGet. O PowerShell do usuário acessa Docker; o build da API baixou pacotes e concluiu. Depois, Ian executou com sucesso o target Docker de testes unitários .NET e o build frontend com testes, TypeScript e Vite. Evidências e limites em [refatoracao-frontend.md](docs/refatoracao-frontend.md); organização em [frontend/README.md](frontend/README.md).
 
-Integração SQL, concorrência, E2E, CI, métricas SQL, lockfiles, MCP real, Claude obrigatório, guia de estudo/PDF e vídeo continuam pendentes. Dockerfile frontend usa npm install provisoriamente enquanto não há lockfile. Não há resultado de UI/HTTP aprovado.
+Testes automatizados de integração SQL, concorrência, E2E, CI, métricas SQL, lockfiles, MCP real, Claude obrigatório, guia de estudo/PDF e vídeo continuam pendentes. Dockerfile frontend usa npm install provisoriamente enquanto não há lockfile. Inspeção manual local aprovou listagem, ranking, filtros, detalhes e itens do formulário; criação de pedidos não foi exercitada nessa inspeção.
 
 ## Processo obrigatório
 

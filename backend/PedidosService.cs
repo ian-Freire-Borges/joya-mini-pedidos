@@ -52,9 +52,31 @@ public sealed class PedidosService(PedidosDb db, TimeProvider clock, ILogger<Ped
     public async Task<List<RankingDto>> Ranking(DateOnly? inicio, DateOnly? fim, CancellationToken ct)
     {
         RegrasPedido.ValidarPeriodo(inicio, fim);
-        return await Filtrar(null, inicio, fim).SelectMany(p => p.Itens.Select(i => new { p.ClienteId, p.Cliente.Nome, Valor = i.PrecoUnitario * i.Quantidade }))
-            .GroupBy(x => new { x.ClienteId, x.Nome }).Select(g => new RankingDto(g.Key.ClienteId, g.Key.Nome, g.Sum(x => x.Valor)))
-            .OrderByDescending(x => x.Total).ThenBy(x => x.ClienteId).Take(5).ToListAsync(ct);
+        return await ConsultarRanking(Filtrar(null, inicio, fim)).ToListAsync(ct);
+    }
+
+    // Ordenar agregados escalares antes de construir o record permite tradução SQL.
+    // GroupBy, SUM, ORDER BY e TOP continuam no servidor; não materializar antes do Take.
+    internal static IQueryable<RankingDto> ConsultarRanking(IQueryable<Pedido> pedidos)
+    {
+        return pedidos
+            .SelectMany(pedido => pedido.Itens.Select(item => new
+            {
+                pedido.ClienteId,
+                pedido.Cliente.Nome,
+                Valor = item.PrecoUnitario * item.Quantidade
+            }))
+            .GroupBy(item => new { item.ClienteId, item.Nome })
+            .Select(grupo => new
+            {
+                grupo.Key.ClienteId,
+                grupo.Key.Nome,
+                Total = grupo.Sum(item => item.Valor)
+            })
+            .OrderByDescending(cliente => cliente.Total)
+            .ThenBy(cliente => cliente.ClienteId)
+            .Take(5)
+            .Select(cliente => new RankingDto(cliente.ClienteId, cliente.Nome, cliente.Total));
     }
     private IQueryable<Pedido> Filtrar(int? clienteId, DateOnly? inicio, DateOnly? fim)
     {

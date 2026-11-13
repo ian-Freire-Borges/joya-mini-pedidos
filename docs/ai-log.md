@@ -1,5 +1,13 @@
 # Registro verdadeiro de assistência
 
+## Refatoração do frontend e validação local — 13/11/2026
+
+Por solicitação de Ian, separados componentes, página, hooks, serviços, contratos, utilitários e CSS legível, preservando o layout. Referência de organização: código do Party Time e documentação oficial React. Nenhuma refatoração arquitetural do backend iniciada.
+
+O teste no navegador revelou erro 500 preexistente na tradução EF do ranking. Ajuste pontual move construção do DTO para depois da agregação/ordenação/limite; adicionados testes com ToQueryString do provider SQL Server e target Docker tests. Não foi usada materialização em memória como contorno.
+
+Seis testes Node passaram localmente. Ian forneceu builds Docker bem-sucedidos do frontend (npm test, TypeScript e Vite) e do target de testes unitários .NET, depois reiniciou API. Navegador com SQL real confirmou listagem, ranking, homônimos, filtros de cliente/período, detalhes e edição dos itens do formulário. Nenhum POST executado; concorrência, rollback, múltiplas páginas e testes móveis continuam pendentes. Evidências e limites em refatoracao-frontend.md. Autoria local conferida: Ian Freire Borges / ianxofreire@gmail.com. Commit e push devem encerrar esta etapa antes da próxima.
+
 ## Hospedagem gratuita — 13/11/2026
 
 Ian autorizou Vercel e Render gratuitos. Frontend implantado do commit 19919dc na pasta frontend, plano Hobby; verificação de identidade feita por Ian. Build passou e UI abriu, mas integração /api retornou 404 sem rewrite. Serviço joya-mini-pedidos-api criado no Render Free (US$ 0/mês), runtime Docker, backend/Dockerfile e contexto raiz. Restore/publish passaram, container iniciou e /api/openapi/v1.json respondeu JSON. Falta SQL Server externo e conexão; nenhum segredo inventado ou gravado no Git. OpenAPI com servidor HTTP e metadata 200 no POST registrados como pendências. Sem alteração funcional/merge. Documentação em hospedagem.md; o próximo commit usa Ian Freire Borges / ianxofreire@gmail.com, associado à conta correta, confirmado nas configurações do GitHub. Não reescrever commits anteriores.

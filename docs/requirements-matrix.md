@@ -1,5 +1,9 @@
 # Matriz de requisitos
 
+## Estado atual após refatoração do frontend — 13/11/2026
+
+Esta seção prevalece sobre os registros históricos abaixo. Frontend separado em componentes, página, hooks, serviços e utilitários; seis testes Node aprovados. Build Docker aprovou testes, TypeScript e Vite. Target Docker de testes unitários .NET executado com sucesso por Ian, incluindo regressão de tradução SQL do ranking. Navegador local com SQL real confirmou listagem, ranking, filtros, homônimos, detalhes e itens do formulário. Não houve criação de pedido nessa inspeção. Integração automatizada, concorrência, rollback, E2E automatizado e CI continuam pendentes. Produção ainda depende de banco externo e encaminhamento /api. Evidências: refatoracao-frontend.md.
+
 ## Atualização para o primeiro push
 
 Esta atualização prevalece sobre a tabela histórica abaixo. Ian confirmou SQL Healthy, inicialização do schema/seed e contagem 6/4/6/6. API compilou e iniciou em Docker. Frontend passou TypeScript, falhou no Vite e aguarda rebuild após correção e088bb9. Unitários não foram executados com sucesso; integração, concorrência, E2E e CI não existem ainda. README/checkpoint agora documentados. Primeiro push privado na main autorizado; sucesso depende de conferência remota. Claude e MCP seguem pendentes. Ver checkpoint-inicial.md para evidências por comando/commit.
