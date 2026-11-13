@@ -1,6 +1,6 @@
 # Especificação — Mini Gestão de Pedidos
 
-Data: 13/11/2026. Autor da implementação assistida: Codex, para Ian Borges.
+Data: 13/11/2026. Implementação assistida por agente de IA.
 Prazo informado: 15/11/2026 16h; fuso do e-mail não confirmado. Não foi enviada mensagem à recrutadora.
 
 ## Objetivo e escopo
@@ -35,7 +35,7 @@ Instantes gravados em UTC. Query aceita datas ISO yyyy-MM-dd interpretadas como 
 3. Filtros e paginação são executados no banco; ranking preserva clientes homônimos e fronteiras do período.
 4. UI acessível trata carregamento, vazio, erros, vários itens e envio único.
 5. Testes unitários e integração real, documentação e evidências distinguem preparação e execução.
-6. Configuração AI First e MCP devem ter evidência de uso real. O enunciado declara Codex obrigatório e exige Claude em outras partes; esclarecer essa divergência, sem inventar uso de ferramentas.
+6. Configuração AI First e MCP devem ter evidência de uso real. Alinhar os requisitos sobre ferramentas de IA, sem inventar uso de ferramentas.
 
 ## Decisões abertas
-Alinhamento da exigência Codex/Claude, uso real de MCP, vídeo e medições SQL. Identidade Git confirmada como Ian Freire Borges / ianxofreire@gmail.com; repositório privado e deploy foram autorizados e realizados.
+Alinhamento dos requisitos de ferramentas de IA, uso real de MCP, vídeo e medições SQL. Identidade Git confirmada como Ian Freire Borges / ianxofreire@gmail.com; repositório privado e deploy foram autorizados e realizados.

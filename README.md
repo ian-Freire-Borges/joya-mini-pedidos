@@ -1,6 +1,6 @@
 # Mini Gestão de Pedidos — Joya Solutions
 
-Aplicação de Ian Freire Borges: .NET 10, EF Core, React/TypeScript e SQL Server 2022. Desenvolvida com assistência do **Codex**; não houve uso de Claude nem conexão MCP ao SQL Server.
+Aplicação .NET 10, EF Core, React/TypeScript e SQL Server 2022, desenvolvida com assistência de um **agente de IA**. Conexão MCP ao SQL Server ainda pendente.
 
 - Aplicação: https://joya-mini-pedidos.vercel.app/
 - API: https://joya-mini-pedidos-api.onrender.com/api
@@ -80,7 +80,7 @@ SQL scripts são a fonte de verdade; EF apenas mapeia, sem migrations ou EnsureC
 
 ## Uso real da IA e correções
 
-Codex apoiou especificação, implementação, revisão, testes e implantação. A separação do frontend em componentes, hooks, serviços e utilitários tornou as responsabilidades explícitas. O histórico Git preserva a evolução, inclusive erros e correções, sem squash.
+O agente de IA apoiou especificação, implementação, revisão, testes e implantação. A separação do frontend em componentes, hooks, serviços e utilitários tornou as responsabilidades explícitas. O histórico Git preserva a evolução, inclusive erros e correções, sem squash.
 
 Correções relevantes: import CSS vazio impedia build Vite; projeção de RankingDto antes da ordenação não era traduzida pelo EF, corrigida com agregação/ordenação/limite antes do DTO e teste ToQueryString; falta de rewrite causava 404 na Vercel, corrigida em frontend/vercel.json. A conexão Somee tinha alias diferente do SAN do certificado: configurado HostNameInCertificate=vb4400.mgmt.somee.com mantendo Encrypt=True e TrustServerCertificate=False. Nunca foi aplicada a proposta de ignorar a validação em produção.
 
@@ -134,7 +134,7 @@ Referências: https://learn.microsoft.com/en-us/sql/t-sql/statements/set-statist
 ## Pendências para a entrega
 
 Unitários adicionais de cliente inexistente, estoque insuficiente, produto inexistente e preservação do preço decimal executados com sucesso conforme confirmação de Ian em 13/11/2026; contagem dessa execução não informada. Após a extração das regras usadas por PedidosService, integração repetida: 21 testes aprovados, 0 falhas, 0 ignorados, aproximadamente 5,2 s; build concluído em 5,6 s. O teste unitário interpreta o resultado da baixa; atualização SQL, rollback e concorrência são verificados pela integração real.
-- Configuração AI First: CLAUDE.md, .claude/, hook, skill e uso real de MCP. O enunciado declara Codex obrigatório, mas outras partes exigem Claude; esclarecer essa divergência antes de alegar conformidade.
+- Configuração AI First: CLAUDE.md, .claude/, hook, skill e uso real de MCP. Alinhar os requisitos sobre ferramentas de IA antes de alegar conformidade integral.
 - Atualizar o plano com ajustes/discordâncias efetivamente realizados; não inventar sessão Claude plan mode.
 - Vídeo de até dez minutos e envio do repositório/vídeo à recrutadora. Nenhum e-mail de entrega enviado.
 

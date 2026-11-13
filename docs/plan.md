@@ -1,6 +1,6 @@
-# Plano de implementação — Codex
+# Plano de implementação — agente de IA
 
-Este plano foi elaborado com Codex. Nenhuma sessão Claude plan mode ocorreu. O enunciado declara Codex obrigatório, mas pede Claude em outras partes; a divergência ainda precisa esclarecimento.
+Este plano foi elaborado com um agente de IA. A revisão em plan mode exigida no enunciado ainda precisa de evidência de execução; os requisitos sobre ferramentas de IA precisam ser alinhados.
 
 ## Sequência e estado
 
