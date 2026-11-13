@@ -100,7 +100,7 @@ Faltam script SQL corrigido, comparação de resultados e investigação real co
 
 ## Pendências para a entrega
 
-- Completar unitários para cliente inexistente e estoque insuficiente; pedido sem itens já está coberto.
+Unitários adicionais de cliente inexistente, estoque insuficiente, produto inexistente e preservação do preço decimal executados com sucesso conforme confirmação de Ian em 13/11/2026; contagem dessa execução não informada. Após a extração das regras usadas por PedidosService, integração repetida: 21 testes aprovados, 0 falhas, 0 ignorados, aproximadamente 5,2 s; build concluído em 5,6 s. O teste unitário interpreta o resultado da baixa; atualização SQL, rollback e concorrência são verificados pela integração real.
 - Entregar investigação SQL da Parte 4 com script, plano e medições reais.
 - Validar subida completa com um comando e inicialização automática em ambiente limpo, sem apagar o volume existente.
 - Configuração AI First: CLAUDE.md, .claude/, hook, skill e uso real de MCP. O enunciado declara Codex obrigatório, mas outras partes exigem Claude; esclarecer essa divergência antes de alegar conformidade.

@@ -31,6 +31,17 @@ public sealed class RegraException(int status, string message) : Exception(messa
 
 public static class RegrasPedido
 {
+    public static Cliente ExigirCliente(Cliente? cliente) =>
+        cliente ?? throw new RegraException(404, "Cliente não encontrado.");
+
+    // A baixa condicional retorna o preço apenas quando há saldo suficiente.
+    // A consulta de existência distingue produto ausente de conflito de estoque.
+    public static decimal ConfirmarBaixaEstoque(decimal? precoRetornado, bool produtoExiste)
+    {
+        if (!produtoExiste) throw new RegraException(404, "Produto não encontrado.");
+        return precoRetornado ?? throw new RegraException(409, "Estoque insuficiente. Atualize os produtos e tente novamente.");
+    }
+
     public static void Validar(CriarPedido? pedido)
     {
         if (pedido is null) throw new RegraException(400, "Informe os dados do pedido.");

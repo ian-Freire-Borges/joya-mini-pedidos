@@ -5,6 +5,47 @@ namespace UnitTests;
 
 public class RegrasTests
 {
+    [Fact]
+    public void ClienteInexistenteRetornaNaoEncontrado()
+    {
+        var erro = Assert.Throws<RegraException>(() => RegrasPedido.ExigirCliente(null));
+        Assert.Equal(404, erro.Status);
+        Assert.Equal("Cliente não encontrado.", erro.Message);
+    }
+
+    [Fact]
+    public void ClienteExistenteMantemIdentidadeDoPedido()
+    {
+        var cliente = new Cliente { Id = 2, Nome = "Ana Silva" };
+        Assert.Same(cliente, RegrasPedido.ExigirCliente(cliente));
+    }
+
+    [Fact]
+    public void ProdutoExistenteSemBaixaRetornaEstoqueInsuficiente()
+    {
+        var erro = Assert.Throws<RegraException>(() => RegrasPedido.ConfirmarBaixaEstoque(null, true));
+        Assert.Equal(409, erro.Status);
+        Assert.Contains("Estoque insuficiente", erro.Message);
+    }
+
+    [Fact]
+    public void ProdutoInexistenteNaoEhConfundidoComFaltaDeEstoque()
+    {
+        var erro = Assert.Throws<RegraException>(() => RegrasPedido.ConfirmarBaixaEstoque(null, false));
+        Assert.Equal(404, erro.Status);
+        Assert.Equal("Produto não encontrado.", erro.Message);
+    }
+
+    [Theory]
+    [InlineData("0.01")]
+    [InlineData("149.90")]
+    [InlineData("999999.99")]
+    public void BaixaConfirmadaPreservaPrecoDecimalDoServidor(string valor)
+    {
+        var preco = decimal.Parse(valor, System.Globalization.CultureInfo.InvariantCulture);
+        Assert.Equal(preco, RegrasPedido.ConfirmarBaixaEstoque(preco, true));
+    }
+
     [Theory]
     [InlineData(-1)] [InlineData(0)] [InlineData(10001)]
     public void RejeitaQuantidadeForaDoContrato(int quantidade)

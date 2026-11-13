@@ -9,8 +9,8 @@ public sealed class PedidosService(PedidosDb db, TimeProvider clock, ILogger<Ped
     {
         RegrasPedido.Validar(entrada);
         await using var tx = await db.Database.BeginTransactionAsync(ct);
-        var cliente = await db.Clientes.AsNoTracking().SingleOrDefaultAsync(x => x.Id == entrada.ClienteId, ct)
-            ?? throw new RegraException(404, "Cliente não encontrado.");
+        var cliente = RegrasPedido.ExigirCliente(
+            await db.Clientes.AsNoTracking().SingleOrDefaultAsync(x => x.Id == entrada.ClienteId, ct));
         var pedido = new Pedido { ClienteId = cliente.Id, DataPedido = clock.GetUtcNow().UtcDateTime };
         foreach (var item in entrada.Itens!.OrderBy(x => x.ProdutoId))
         {
@@ -20,13 +20,12 @@ public sealed class PedidosService(PedidosDb db, TimeProvider clock, ILogger<Ped
             cmd.CommandText = "UPDATE dbo.Produtos SET Estoque = Estoque - @q OUTPUT INSERTED.Preco WHERE Id = @id AND Estoque >= @q;";
             var q = cmd.CreateParameter(); q.ParameterName = "@q"; q.DbType = DbType.Int32; q.Value = item.Quantidade; cmd.Parameters.Add(q);
             var id = cmd.CreateParameter(); id.ParameterName = "@id"; id.DbType = DbType.Int32; id.Value = item.ProdutoId; cmd.Parameters.Add(id);
-            var preco = await cmd.ExecuteScalarAsync(ct);
-            if (preco is null || preco == DBNull.Value)
-            {
-                if (!await db.Produtos.AsNoTracking().AnyAsync(x => x.Id == item.ProdutoId, ct)) throw new RegraException(404, "Produto não encontrado.");
-                throw new RegraException(409, "Estoque insuficiente. Atualize os produtos e tente novamente.");
-            }
-            pedido.Itens.Add(new ItemPedido { ProdutoId = item.ProdutoId, Quantidade = item.Quantidade, PrecoUnitario = (decimal)preco });
+            var resultado = await cmd.ExecuteScalarAsync(ct);
+            decimal? precoRetornado = resultado is null || resultado == DBNull.Value ? null : (decimal)resultado;
+            var produtoExiste = precoRetornado.HasValue ||
+                await db.Produtos.AsNoTracking().AnyAsync(x => x.Id == item.ProdutoId, ct);
+            var preco = RegrasPedido.ConfirmarBaixaEstoque(precoRetornado, produtoExiste);
+            pedido.Itens.Add(new ItemPedido { ProdutoId = item.ProdutoId, Quantidade = item.Quantidade, PrecoUnitario = preco });
         }
         db.Pedidos.Add(pedido);
         await db.SaveChangesAsync(ct);
