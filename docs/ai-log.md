@@ -1,5 +1,9 @@
 # Registro verdadeiro de assistência
 
+## Banco externo e conexão TLS validada — 13/11/2026
+
+Banco gratuito JoyaPedidos criado na Somee (SQL Server 2022 Express, 30 MB), schema/seed aplicados e contagens 6/4/6/6 confirmadas no painel. Ian autorizou armazenar conexão no segredo do Render. Falha inicial de nome de certificado investigada sem desabilitar validação; Ian rejeitou explicitamente TrustServerCertificate=True. Diagnóstico sem credenciais no PowerShell de Ian identificou SAN vb4400.mgmt.somee.com, Let's Encrypt YR1. Corrigido HostNameInCertificate no segredo, mantendo Encrypt=True e TrustServerCertificate=False. Primeiro formulário não persistiu edição; valor salvo conferido e corrigido antes da validação final. Deploy dep-dbrk8pec6qcc73e59450 Live; navegador confirmou health ok, seis clientes e ranking real. Sem POST ou testes de concorrência. Senha fora do Git; detalhes e limites em hospedagem.md. Push anterior ac0a608 confirmado pela origem do deploy. Somente Codex usado.
+
 ## Refatoração do frontend e validação local — 13/11/2026
 
 Por solicitação de Ian, separados componentes, página, hooks, serviços, contratos, utilitários e CSS legível, preservando o layout. Referência de organização: código do Party Time e documentação oficial React. Nenhuma refatoração arquitetural do backend iniciada.
