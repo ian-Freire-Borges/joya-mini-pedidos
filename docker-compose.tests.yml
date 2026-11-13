@@ -1,0 +1,50 @@
+name: joya-mini-pedidos-tests
+services:
+  sql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: Y
+      MSSQL_PID: Developer
+      MSSQL_SA_PASSWORD: JoyaIntegrationOnly!2026
+    # Nenhum volume da aplicação: dados descartáveis nesta instância separada.
+    healthcheck:
+      test: [CMD-SHELL, '/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$MSSQL_SA_PASSWORD" -C -b -Q "SELECT 1" -o /dev/null']
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+  db-init:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    user: root
+    environment:
+      MSSQL_SA_PASSWORD: JoyaIntegrationOnly!2026
+    volumes:
+      - ./database:/database:ro
+    entrypoint: [/bin/bash, /database/init.sh]
+    depends_on:
+      sql:
+        condition: service_healthy
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__Pedidos: Server=sql;Database=JoyaPedidos;User Id=sa;Password=JoyaIntegrationOnly!2026;Encrypt=True;TrustServerCertificate=True
+    depends_on:
+      db-init:
+        condition: service_completed_successfully
+  integration-tests:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      target: integration-tests
+    environment:
+      JOYA_INTEGRATION_ENABLED: '1'
+      JOYA_INTEGRATION_API: http://api:8080
+      JOYA_INTEGRATION_SQL: Server=sql;Database=JoyaPedidos;User Id=sa;Password=JoyaIntegrationOnly!2026;Encrypt=True;TrustServerCertificate=True
+    depends_on:
+      api:
+        condition: service_started
+      db-init:
+        condition: service_completed_successfully

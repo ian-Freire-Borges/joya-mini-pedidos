@@ -7,6 +7,11 @@ RUN dotnet publish backend/Pedidos.Api.csproj -c Release -o /out --no-restore
 FROM build AS tests
 COPY tests/UnitTests/ tests/UnitTests/
 RUN dotnet test tests/UnitTests/UnitTests.csproj -c Release
+FROM build AS integration-tests
+COPY database/ database/
+COPY tests/IntegrationTests/ tests/IntegrationTests/
+RUN dotnet build tests/IntegrationTests/IntegrationTests.csproj -c Release
+ENTRYPOINT ["dotnet", "test", "tests/IntegrationTests/IntegrationTests.csproj", "-c", "Release", "--no-build", "--logger", "console;verbosity=normal"]
 FROM mcr.microsoft.com/dotnet/aspnet:10.0
 WORKDIR /app
 COPY --from=build /out .

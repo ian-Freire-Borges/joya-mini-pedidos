@@ -41,7 +41,23 @@ npm --prefix frontend test
 npm --prefix frontend run build
 ```
 
-O build Docker do frontend também executa testes e compilação. **Ainda não existe projeto de testes de integração**; seu comando será incluído quando implementado, sem apresentar comandos inexistentes como funcionais.
+O build Docker do frontend também executa testes e compilação.
+
+Integração HTTP com SQL Server real, em containers separados dos serviços da aplicação:
+
+```powershell
+docker compose -f docker-compose.tests.yml run --build --rm integration-tests
+```
+
+O Compose usa o projeto joya-mini-pedidos-tests, sem portas publicadas nem volume compartilhado com a aplicação. Cria schema/seed pelos mesmos scripts de database/. A suíte chama a API em outro processo por HTTP e confere a persistência com SqlClient; não usa SQLite, EF InMemory ou mocks do banco. Cada caso limpa e repõe o seed somente nessa instância descartável; execução paralela dos casos está desabilitada. As duas compras do teste de concorrência são disparadas juntas. Não executar duas instâncias da suíte simultaneamente no mesmo projeto de testes.
+
+Ao terminar, remova apenas os containers/rede de testes (não apaga volumes da aplicação):
+
+```powershell
+docker compose -f docker-compose.tests.yml down
+```
+
+Casos implementados: criação com itens/preço do servidor/Location/estoque, fotografia de preço, cliente e produto inexistentes, pedido sem itens, quantidade inválida, duplicatas, tentativa de enviar preço, estoque insuficiente, rollback após baixa do primeiro produto, concorrência do último item, consultas com período/cliente/paginação e ranking com homônimos. **Validação em 13/11/2026:** Ian executou o comando acima no PowerShell; build concluído e 21 testes passaram, 0 falhas e 0 ignorados, em aproximadamente 5,1 s. Saída conferida na conversa. O terminal do agente não acessa o Docker; a execução foi realizada no ambiente do usuário. Unitários de cliente inexistente/estoque insuficiente continuam pendentes; os casos acima são de integração.
 
 Validação observada: seis testes Node aprovados; target Docker de testes unitários .NET concluído com sucesso por Ian; build TypeScript/Vite aprovado. Inspeção manual local e pública confirmou catálogos, seis pedidos, ranking e filtro por cliente. No site público, cliente 1 retornou dois pedidos e limpar restaurou seis. Essa inspeção não testou criação, rollback, concorrência nem navegação entre várias páginas.
 
@@ -58,7 +74,7 @@ Validação observada: seis testes Node aprovados; target Docker de testes unit�
 | frontend/src/services; types; utils | Transporte HTTP, contratos e funções puras |
 | tests/UnitTests; frontend/tests | Regressões de regras, tradução SQL e contratos frontend |
 
-Preço é obtido no servidor e registrado no item. Valores usam decimal(18,2). Pedido, itens e baixa de estoque usam uma transação; atualização condicional evita baixar saldo insuficiente e OUTPUT captura o preço. Produtos são processados por ID crescente. Duplicatas são rejeitadas. Datas são UTC, com início inclusivo e fim exclusivo. Essas decisões ainda precisam dos testes de integração e concorrência.
+Preço é obtido no servidor e registrado no item. Valores usam decimal(18,2). Pedido, itens e baixa de estoque usam uma transação; atualização condicional evita baixar saldo insuficiente e OUTPUT captura o preço. Produtos são processados por ID crescente. Duplicatas são rejeitadas. Datas são UTC, com início inclusivo e fim exclusivo. A suíte de integração aprovada verificou criação, rollback após falha de item e duas compras concorrentes do último item disponível. Esse cenário de concorrência não representa teste de carga nem prova de ausência de todos os possíveis deadlocks.
 
 SQL scripts são a fonte de verdade; EF apenas mapeia, sem migrations ou EnsureCreated paralelos. Frontend usa /api na mesma origem: Nginx no Docker e rewrite de frontend/vercel.json na Vercel preservam o prefixo para a API.
 
@@ -84,7 +100,6 @@ Faltam script SQL corrigido, comparação de resultados e investigação real co
 
 ## Pendências para a entrega
 
-- Integração automatizada dos endpoints com SQL Server real: criação, consultas, filtros, paginação e erros; comprovar rollback e estoque concorrente.
 - Completar unitários para cliente inexistente e estoque insuficiente; pedido sem itens já está coberto.
 - Entregar investigação SQL da Parte 4 com script, plano e medições reais.
 - Validar subida completa com um comando e inicialização automática em ambiente limpo, sem apagar o volume existente.
