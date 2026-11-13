@@ -9,7 +9,7 @@ Este plano foi elaborado com Codex. Nenhuma sessão Claude plan mode ocorreu. O 
 3. API e regras: implementadas. Unitários anteriores executados em Docker. Adicionados casos de cliente inexistente, estoque insuficiente, produto inexistente e preço decimal; decisões extraídas de PedidosService para RegrasPedido e reutilizadas na produção. Ian confirmou execução dos unitários com sucesso, sem contagem informada; integração repetida com 21 testes aprovados, 0 falhas e 0 ignorados em aproximadamente 5,2 s. Validação registrada antes do commit.
 4. Frontend: implementado e separado em componentes, hooks, serviços e utilitários; build/testes aprovados e leituras conferidas no navegador.
 5. Integração automatizada com SQL Server real: suíte implementada em tests/IntegrationTests, com Compose isolado, incluindo criação, rollback e concorrência. Executada por Ian no PowerShell em 13/11/2026: build concluído, 21 testes aprovados, 0 falhas e 0 ignorados (aproximadamente 5,1 s). Etapa pronta para commit e push, com resultados registrados no README.
-6. Debug da query fornecida: análise inicial no README; script, plano de execução e medições pendentes.
+6. Debug da query fornecida: scripts corrigido e comparativo executados por Ian no SQL de testes. Verificações de resultados aprovadas; 100 mil pedidos, planos reais e três rodadas IO/TIME analisados. README registra números e limites: intervalo melhora estimativa e tempo observado, mas não reduz leituras nem gera seek nesse cenário. Nenhum índice adicional imposto sem evidência.
 7. AI First: rules, hook, skill e MCP pendentes de implementação/uso real e alinhamento sobre Claude.
 8. Entrega: README consolidado, deploy online funcional para leituras; vídeo e e-mail pendentes. CI e Playwright são diferenciais.
 

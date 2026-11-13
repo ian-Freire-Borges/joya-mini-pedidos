@@ -34,6 +34,19 @@ services:
     depends_on:
       db-init:
         condition: service_completed_successfully
+  query-analysis:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    user: root
+    environment:
+      SQLCMDPASSWORD: JoyaIntegrationOnly!2026
+    volumes:
+      - ./database:/database:ro
+      - ./TestResults/sql:/results
+    entrypoint: [/opt/mssql-tools18/bin/sqlcmd]
+    command: [-S, sql, -U, sa, -C, -b, -d, JoyaPedidos, -i, /database/queries/comparar-ranking.sql, -o, /results/comparacao-ranking.txt, -y, '0', -w, '65535']
+    depends_on:
+      db-init:
+        condition: service_completed_successfully
   integration-tests:
     build:
       context: .

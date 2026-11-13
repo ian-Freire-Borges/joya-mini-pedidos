@@ -92,16 +92,48 @@ Frontend no Vercel Hobby, API Docker no Render Free e SQL Server 2022 Express na
 
 O Render gratuito pode adormecer e demorar para responder. Certificado Somee observado em 13/11/2026 tinha validade até 16/11/2026; renovação depende do provedor. Nenhuma garantia de renovação foi presumida.
 
-## Debug da query do enunciado — pendente de implementação e medição
+## Debug da query do enunciado
 
-A investigação específica da Parte 4 ainda não foi entregue. Pontos identificáveis na query fornecida: YEAR(DataPedido) dificulta busca por índice; GROUP BY apenas Nome mistura homônimos; ORDER BY Total sem DESC ordena em sentido contrário ao ranking desejado; falta limitar aos cinco primeiros. O filtro em WHERE elimina linhas sem pedido do LEFT JOIN. A semântica dos joins deve ser alinhada ao ranking esperado.
+A query corrigida está em [database/queries/top-clientes.sql](database/queries/top-clientes.sql). O ranking considera clientes com compras no período; clientes sem compras não participam.
 
-Faltam script SQL corrigido, comparação de resultados e investigação real com plano de execução e STATISTICS IO/TIME. Índices já existem no schema, mas não foram medidas diferenças de desempenho. A correção de tradução EF do ranking não substitui essa atividade.
+- `GROUP BY c.Nome` misturava clientes homônimos. Agrupar por ID e nome preserva as identidades.
+- `ORDER BY Total` ordenava do menor para o maior. Usar `DESC` e `c.Id ASC` torna os empates determinísticos; `TOP (5)` limita o ranking.
+- `YEAR(p.DataPedido)=2026` aplica função à coluna. O intervalo `>= 2026-01-01 AND < 2027-01-01` permite busca por faixa e inclui todas as frações do último dia. Isso permite, mas não garante, Index Seek: a escolha depende de cardinalidade, estatísticas e custo.
+- O filtro em WHERE já removia linhas do LEFT JOIN sem pedidos no ano. INNER JOIN expressa a intenção do ranking de compradores. Cliente sem pedidos, como Eva no seed, não deve aparecer com total nulo.
+
+Índices existentes: Pedidos(DataPedido,ClienteId) atende ao período; Pedidos(ClienteId,DataPedido) atende ao filtro por cliente e período. A PK clustered de Pedidos inclui Id na folha dos índices não clustered. A PK clustered de ItensPedido(PedidoId,ProdutoId) permite o join por PedidoId e contém quantidade/preço na folha. Não foi adicionado índice redundante nem imposto hint sem medição.
+
+### Executar investigação no SQL de testes
+
+```powershell
+docker compose -f docker-compose.tests.yml run --rm query-analysis
+```
+
+Resultado bruto em `TestResults/sql/comparacao-ranking.txt` (ignorado pelo Git). O serviço usa a instância separada de testes; o script só altera tabelas temporárias da própria sessão e não toca nas tabelas do aplicativo. Não executar junto da suíte de integração para evitar interferência de carga nas medições.
+
+O script comparar-ranking.sql verifica resultados esperados de homônimos e fronteiras, TOP 5 e desempate, depois gera 100 mil pedidos sintéticos distribuídos por aproximadamente dez anos e mil clientes. Replica os índices de leitura relevantes, atualiza estatísticas com FULLSCAN, aquece as consultas e executa três rodadas alternando a ordem. Não limpa cache global. Compara original, uma versão com semântica corrigida mas ainda YEAR e a versão por intervalo; valida equivalência dos dois controles antes de medir. A primeira rodada inclui plano real tabular com STATISTICS PROFILE; todas incluem STATISTICS IO/TIME. A original tem semântica/cardinalidade diferente; o par YEAR_CONTROLE/INTERVALO permite analisar o efeito do predicado sem essa confusão.
+
+### Resultado observado em 13/11/2026
+
+Ian executou o serviço query-analysis. Relatório lido integralmente para extrair resultados e planos: SQL Server 2022 CU28, 16.0.4325.4, Linux. Passaram as verificações de homônimos/fronteiras, TOP 5/desempate e equivalência entre YEAR_CONTROLE e INTERVALO. Massa: 100.000 pedidos, dos quais 9.855 em 2026. Na fixture, a original fundiu as duas Ana Silva em 449,70; a corrigida separou cliente 2 (299,80) e cliente 1 (149,90).
+
+| Consulta | Leituras lógicas por rodada (Clientes + Pedidos + Itens) | CPU ms, rodadas 1/2/3 | Tempo ms, rodadas 1/2/3 |
+|---|---|---|---|
+| Original, resultado incorreto | 7 + 326 + 417 = 750 | 52 / 41 / 40 | 48 / 43 / 38 |
+| YEAR_CONTROLE, semântica corrigida | 10 + 361 + 417 = 788 | 19 / 20 / 20 | 22 / 19 / 20 |
+| INTERVALO, corrigida e sargable | 10 + 361 + 417 = 788 | 20 / 12 / 16 | 17 / 14 / 14 |
+
+Tempos referentes à execução da instrução interna, sem somar novamente a mensagem do sp_executesql. Todas as consultas tiveram zero leituras físicas, com cache aquecido; a primeira rodada inclui profiling. Três execuções locais curtas não estabelecem ganho universal ou benchmark de produção. O menor tempo observado da versão por intervalo não foi acompanhado de redução de IO; não atribuir toda a diferença original/corrigida ao predicado, pois agrupamento, joins e quantidade de linhas retornadas também mudaram.
+
+**Plano real:** YEAR_CONTROLE e INTERVALO usaram Clustered Index Scan em Pedidos e ItensPedido, Merge Join, Hash Match Aggregate, ordenação/Top e buscas de cinco clientes pela PK. Apesar do índice DataPedido/ClienteId disponível, o plano escolhido varreu na ordem da PK para o merge join; a interpretação é que esse caminho evitou a ordenação adicional necessária em uma alternativa por faixa. O filtro por intervalo continuou residual nesse plano; não foi observado Index Seek em Pedidos. Linhas estimadas após o filtro: aproximadamente 11.623,5 com YEAR e 9.864,8 com intervalo; ambas retornaram 9.855 linhas reais. O intervalo melhorou a estimativa e removeu a função da coluna, mas não mudou o acesso escolhido nesse cenário. O scan de Itens retornou 98.239 linhas antes do encerramento do merge, contra estimativa de 100.000. A original usou scan de índice de Pedidos, agregação por nome e ordenações, retornando 999 grupos no benchmark.
+
+Não adicionado novo índice nem forçado seek: os índices existentes cobrem os acessos relevantes, e este ensaio não demonstrou benefício de um índice adicional. Outra distribuição/seletividade pode justificar nova comparação; um índice só deve ser adotado após medir leituras, planos e custo de escrita. A correção entregue atende aos resultados esperados e torna o predicado apto a busca por intervalo.
+
+Referências: https://learn.microsoft.com/en-us/sql/t-sql/statements/set-statistics-profile-transact-sql ; https://learn.microsoft.com/en-us/sql/t-sql/statements/set-statistics-io-transact-sql ; https://learn.microsoft.com/en-us/sql/t-sql/statements/set-statistics-time-transact-sql .
 
 ## Pendências para a entrega
 
 Unitários adicionais de cliente inexistente, estoque insuficiente, produto inexistente e preservação do preço decimal executados com sucesso conforme confirmação de Ian em 13/11/2026; contagem dessa execução não informada. Após a extração das regras usadas por PedidosService, integração repetida: 21 testes aprovados, 0 falhas, 0 ignorados, aproximadamente 5,2 s; build concluído em 5,6 s. O teste unitário interpreta o resultado da baixa; atualização SQL, rollback e concorrência são verificados pela integração real.
-- Entregar investigação SQL da Parte 4 com script, plano e medições reais.
 - Validar subida completa com um comando e inicialização automática em ambiente limpo, sem apagar o volume existente.
 - Configuração AI First: CLAUDE.md, .claude/, hook, skill e uso real de MCP. O enunciado declara Codex obrigatório, mas outras partes exigem Claude; esclarecer essa divergência antes de alegar conformidade.
 - Atualizar o plano com ajustes/discordâncias efetivamente realizados; não inventar sessão Claude plan mode.
