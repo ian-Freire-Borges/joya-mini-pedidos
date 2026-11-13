@@ -14,3 +14,9 @@
 ## Verificações
 
 Cada commit futuro registra o motivo e os comandos aplicáveis. Resultados pendentes permanecem pendentes até execução bem-sucedida.
+
+## Contratos e regras
+
+- Corrigida Location do POST para incluir PathBase `/api` quando presente, com Nginx preservando o prefixo. Data de query agora exige ISO exato; corpo nulo recebe erro de regra.
+- Adicionados testes xUnit v3 para limites de quantidade/itens, duplicidade, entradas nulas, IDs, decimal e datas UTC. Inexistência e estoque dependem de SQL Server e serão cobertos por integração real.
+- `git diff --check`: sem erros. Primeira tentativa de `dotnet test --configfile` rejeitada porque a opção pertence a restore; comando corrigido para propriedade RestoreConfigFile. Testes ainda não aprovados.

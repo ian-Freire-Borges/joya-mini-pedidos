@@ -31,8 +31,9 @@ public sealed class RegraException(int status, string message) : Exception(messa
 
 public static class RegrasPedido
 {
-    public static void Validar(CriarPedido pedido)
+    public static void Validar(CriarPedido? pedido)
     {
+        if (pedido is null) throw new RegraException(400, "Informe os dados do pedido.");
         if (pedido.ClienteId <= 0) throw new RegraException(400, "Selecione um cliente válido.");
         if (pedido.Itens is null || pedido.Itens.Count is < 1 or > 100) throw new RegraException(400, "Informe entre 1 e 100 itens.");
         if (pedido.Itens.Any(i => i is null || i.ProdutoId <= 0 || i.Quantidade is < 1 or > 10000))
@@ -45,4 +46,12 @@ public static class RegrasPedido
         if (inicio.HasValue && fim.HasValue && inicio >= fim) throw new RegraException(400, "A data inicial deve ser anterior à data final exclusiva.");
     }
     public static DateTime Utc(DateOnly dia) => DateTime.SpecifyKind(dia.ToDateTime(TimeOnly.MinValue), DateTimeKind.Utc);
+    public static DateOnly? LerData(string? texto)
+    {
+        if (texto is null) return null;
+        if (!DateOnly.TryParseExact(texto, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture,
+                System.Globalization.DateTimeStyles.None, out var dia))
+            throw new RegraException(400, "Informe datas no formato yyyy-MM-dd.");
+        return dia;
+    }
 }

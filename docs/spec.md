@@ -18,7 +18,7 @@ Cadastrar pedidos, consultar pedidos paginados e classificar os cinco clientes d
 - Transação única para pedido, itens e estoque. Atualização SQL condicional `Estoque >= quantidade`, com preço obtido em UPDATE OUTPUT; produtos processados por Id ascendente. Rollback integral se qualquer produto falhar. SQL Server mantém locks de atualização até commit; um comprador concorrente espera e reavalia o predicado.
 
 ## Contratos HTTP
-Base pública `/api`, removida pelo proxy; rotas internas sem prefixo.
+Base pública `/api`, preservada pelo proxy e interpretada por UsePathBase; rotas internas sem prefixo. Location usa PathBase e caminho absoluto no host.
 - GET /clientes: [{id,nome}]. GET /produtos: [{id,nome,preco,estoque}].
 - POST /pedidos: {"clienteId":1,"itens":[{"produtoId":1,"quantidade":2}]}. 201: {id,clienteId,clienteNome,dataPedido,total,itens:[{produtoId,produtoNome,quantidade,precoUnitario,subtotal}]}. Location aponta GET /pedidos/{id}.
 - GET /pedidos/{id}: mesmo DTO; 404 quando ausente.
