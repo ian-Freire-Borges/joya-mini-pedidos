@@ -35,6 +35,10 @@ O Render gratuito pode adormecer por inatividade. Não foi contratado disco ou b
 
 ## Controle de mudanças
 
+### Encaminhamento Vercel → Render
+
+O frontend usa URLs relativas /api. Criado frontend/vercel.json, pois Root Directory do projeto Vercel é frontend, com rewrite /api/:path* para https://joya-mini-pedidos-api.onrender.com/api/:path*. Preserva prefixo /api esperado por UsePathBase e mantém requisições do navegador na mesma origem. Configuração sem credenciais; não requer desabilitar CORS ou TLS. Fonte: https://vercel.com/docs/routing/rewrites. Publicação e validação do encaminhamento dependem de envio ao GitHub e novo deploy; existência local do arquivo não corrige o deploy anterior.
+
 ### Correção TLS da Somee — 13/11/2026
 
 Ian rejeitou desabilitar a validação do certificado; TrustServerCertificate permanece False. Diagnóstico sem credenciais executado no PowerShell de Ian identificou Subject/SAN vb4400.mgmt.somee.com, emissor Let's Encrypt YR1, validade até 2026-11-16T13:17:56Z e somente RemoteCertificateNameMismatch. Nome de máquina consultado no painel Somee: vb4400. Configuração corrigida no segredo Render: Encrypt=True;TrustServerCertificate=False;HostNameInCertificate=vb4400.mgmt.somee.com. O endpoint do banco permanece JoyaPedidos.mssql.somee.com. HostNameInCertificate define a identidade esperada; não ignora cadeia, validade ou correspondência do certificado. A renovação do certificado é responsabilidade da Somee; validade observada não garante renovação futura. Deploy dep-dbrk85d6e07s73bvnhdg iniciado; resultado HTTP deve ser confirmado antes de declarar integração aprovada.
