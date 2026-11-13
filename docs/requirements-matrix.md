@@ -10,10 +10,10 @@ Estado em 13/11/2026. Implementado significa escrito; validado exige execução 
 | Seed repetível e datas limite | database/002-seed.sql | Implementado, não executado |
 | Transação e estoque concorrente | backend/PedidosService.cs | Implementado, não validado |
 | Contratos, filtros, ranking | backend/Program.cs; PedidosService.cs | Implementado, não validado |
-| UI React/TypeScript | frontend/ | Pendente |
-| Testes unitários xUnit | dotnet test tests/UnitTests | Pendente |
+| UI React/TypeScript | frontend/ | Implementado, build e inspeção visual pendentes |
+| Testes unitários xUnit | dotnet test tests/UnitTests | Escrito; restore bloqueado por DNS, não executado |
 | Integração SQL Server e concorrência | dotnet test tests/IntegrationTests | Pendente |
-| Docker completo e reinicialização | docker compose up --build | Bloqueado: acesso negado ao daemon; frontend ausente |
+| Docker completo e reinicialização | docker compose up --build | Arquivos escritos; bloqueado por acesso negado ao daemon |
 | Debug SQL, planos e IO/TIME | database/queries/ | Pendente; original exato não disponível |
 | CI e E2E | .github/workflows/; frontend/e2e/ | Pendente |
 | Claude Code / plan mode | Sessão real ou aceite da recrutadora | Pendente |

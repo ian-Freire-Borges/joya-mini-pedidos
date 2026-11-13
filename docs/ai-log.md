@@ -20,3 +20,11 @@ Cada commit futuro registra o motivo e os comandos aplicáveis. Resultados pende
 - Corrigida Location do POST para incluir PathBase `/api` quando presente, com Nginx preservando o prefixo. Data de query agora exige ISO exato; corpo nulo recebe erro de regra.
 - Adicionados testes xUnit v3 para limites de quantidade/itens, duplicidade, entradas nulas, IDs, decimal e datas UTC. Inexistência e estoque dependem de SQL Server e serão cobertos por integração real.
 - `git diff --check`: sem erros. Primeira tentativa de `dotnet test --configfile` rejeitada porque a opção pertence a restore; comando corrigido para propriedade RestoreConfigFile. Testes ainda não aprovados.
+
+## Frontend
+
+- Implementada UI React/TypeScript com listagem, filtros de cliente/período, paginação, detalhes dos itens, ranking, formulário com vários produtos e estados de erro/vazio/carregamento.
+- Envio protegido por ref e estado; totais da UI são estimativos, e somente produto/quantidade/cliente são enviados. Datas finais inclusivas viram próximo dia UTC.
+- Nginx preserva `/api`, encaminhando ao PathBase da API. Adicionado Dockerfile do frontend; build ainda não executado.
+- Restore dos testes com configuração local chegou ao NuGet e falhou com NU1301 / DNS de api.nuget.org. npm também retornou ENOTFOUND. Não são testes aprovados.
+- Dependências frontend têm intervalos declarados; lockfile ainda depende de acesso ao registry. Dockerfile usa npm install provisoriamente, documentado como pendência de reprodutibilidade.
