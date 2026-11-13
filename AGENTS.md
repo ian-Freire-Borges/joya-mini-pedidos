@@ -1,6 +1,6 @@
 # Instruções do projeto
 
-Leia docs/spec.md e docs/requirements-matrix.md. Não invente testes, uso de Claude ou métricas.
+Leia docs/spec.md, docs/plan.md e README.md. Não invente testes, uso de Claude ou métricas.
 API .NET 10 em backend; UI React/TypeScript em frontend; schema SQL autoritativo em database.
 Não use EnsureCreated nem migrations paralelas. Não substitua SQL Server por SQLite nos testes.
 Dinheiro decimal(18,2); preços sempre do servidor. Itens repetidos são inválidos.
@@ -13,4 +13,4 @@ Sem identidade Git confirmada, não invente autor nem e-mail para commits.
 Uma etapa por vez: implementar, testar, documentar resultado, commit e push confirmado antes da próxima etapa.
 Pare em erro ou teste bloqueado. Não acumule etapas ou commits sem push.
 Nenhum merge sem testes aprovados e autorização do usuário.
-O primeiro push privado foi explicitamente solicitado como checkpoint parcial. Preserve os cinco commits anteriores; não reescreva histórico. Veja docs/checkpoint-inicial.md.
+O primeiro push privado foi explicitamente solicitado como checkpoint parcial. Preserve os commits anteriores; não reescreva histórico. Documentação consolidada no README; manter docs/spec.md e docs/plan.md exigidos no enunciado.

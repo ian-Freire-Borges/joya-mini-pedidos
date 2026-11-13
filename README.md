@@ -1,72 +1,95 @@
 # Mini Gestão de Pedidos — Joya Solutions
 
-Projeto de Ian Borges com API .NET 10/EF Core, React/TypeScript/Vite e SQL Server 2022 Developer. Assistência real: **Codex**. Claude Code e MCP ainda não utilizados/validados.
+Aplicação de Ian Freire Borges: .NET 10, EF Core, React/TypeScript e SQL Server 2022. Desenvolvida com assistência do **Codex**; não houve uso de Claude nem conexão MCP ao SQL Server.
 
-## Estado deste push inicial
+- Aplicação: https://joya-mini-pedidos.vercel.app/
+- API: https://joya-mini-pedidos-api.onrender.com/api
+- Repositório: https://github.com/ian-Freire-Borges/joya-mini-pedidos
+- [Especificação](docs/spec.md) · [Plano e decisões de implementação](docs/plan.md)
 
-### Atualização de hospedagem — 13/11/2026
+## Executar com Docker
 
-Frontend publicado no Hobby gratuito: https://joya-mini-pedidos.vercel.app. O build passou após a correção CSS; a UI abriu, mas chamadas à API retornam 404 porque falta o encaminhamento ao backend. API publicada no Render Free: https://joya-mini-pedidos-api.onrender.com; /api/openapi/v1.json respondeu JSON. SQL Server externo e ConnectionStrings__Pedidos ainda ausentes, portanto as operações com banco não estão aprovadas. Veja [hospedagem.md](docs/hospedagem.md). O parágrafo abaixo registra o checkpoint anterior à hospedagem.
+Requisitos: Docker com Linux containers e Docker Compose. Na raiz:
 
-Trabalho em andamento, sem aprovação de entrega. Banco inicializado e API compilada/iniciada no Docker do usuário. Frontend passou TypeScript, mas falhou no Vite por import CSS vazio; correção commitada, rebuild pendente. Testes automatizados não foram aprovados.
+```powershell
+docker compose up --build
+```
 
-Veja [checkpoint-inicial.md](docs/checkpoint-inicial.md) para histórico por commit, evidências e pendências; [spec.md](docs/spec.md) para contratos e regras; [ai-log.md](docs/ai-log.md) para o registro verdadeiro de assistência.
+Acesso: http://localhost:8080. O Compose define SQL Server, execução automática de schema/seed, API e frontend com Nginx. Os serviços já foram compilados e iniciados por etapas; **a subida completa a partir de ambiente limpo com esse único comando ainda precisa ser validada**.
 
-## Estrutura
+Dados persistem no volume sql-data. JOYA_PORT altera a porta local; JOYA_SQL_PASSWORD substitui a senha de demonstração local. Não apagar volumes para diagnosticar problemas. O SQL local usa sa e certificado de desenvolvimento aceito pela configuração Compose; essa configuração não deve ser reutilizada em produção. A implantação pública valida o certificado do SQL.
+
+## Executar os testes existentes
+
+Unitários do backend, em container:
+
+```powershell
+docker build --target tests -f backend/Dockerfile -t joya-backend-testes .
+```
+
+Ou com SDK .NET 10 instalado:
+
+```powershell
+dotnet test tests/UnitTests/UnitTests.csproj -c Release
+```
+
+Frontend com Node 24:
+
+```powershell
+npm --prefix frontend install
+npm --prefix frontend test
+npm --prefix frontend run build
+```
+
+O build Docker do frontend também executa testes e compilação. **Ainda não existe projeto de testes de integração**; seu comando será incluído quando implementado, sem apresentar comandos inexistentes como funcionais.
+
+Validação observada: seis testes Node aprovados; target Docker de testes unitários .NET concluído com sucesso por Ian; build TypeScript/Vite aprovado. Inspeção manual local e pública confirmou catálogos, seis pedidos, ranking e filtro por cliente. No site público, cliente 1 retornou dois pedidos e limpar restaurou seis. Essa inspeção não testou criação, rollback, concorrência nem navegação entre várias páginas.
+
+## Organização e decisões técnicas
 
 | Caminho | Responsabilidade |
 |---|---|
 | backend/Program.cs | Rotas, ProblemDetails, OpenAPI e PathBase /api |
-| backend/PedidosService.cs | Consultas EF e criação transacional com baixa condicional |
-| backend/Models.cs | Entidades, DTOs e regras de entrada |
-| backend/PedidosDb.cs | Mapeamento SQL Server; sem migrations ou EnsureCreated |
-| database/ | Schema autoritativo e seed com marcador de versão |
-| frontend/ | Listagem, filtros, paginação, ranking e formulário; Nginx para /api |
-| tests/UnitTests/ | Testes xUnit escritos, ainda não executados com sucesso |
+| backend/PedidosService.cs | Consultas e criação transacional |
+| backend/Models.cs; PedidosDb.cs | Entidades, contratos, regras e mapeamento |
+| database/ | Schema SQL autoritativo e seed idempotente |
+| frontend/src/pages; components | Coordenação da página e apresentação |
+| frontend/src/hooks | Estado e ciclo de requisições/formulário |
+| frontend/src/services; types; utils | Transporte HTTP, contratos e funções puras |
+| tests/UnitTests; frontend/tests | Regressões de regras, tradução SQL e contratos frontend |
 
-Preço vem do servidor e é gravado no item; dinheiro usa decimal(18,2). Pedido, itens e baixa usam transação única. Produtos repetidos são rejeitados. Datas UTC, início inclusivo e fim exclusivo. Concorrência ainda precisa validação real.
+Preço é obtido no servidor e registrado no item. Valores usam decimal(18,2). Pedido, itens e baixa de estoque usam uma transação; atualização condicional evita baixar saldo insuficiente e OUTPUT captura o preço. Produtos são processados por ID crescente. Duplicatas são rejeitadas. Datas são UTC, com início inclusivo e fim exclusivo. Essas decisões ainda precisam dos testes de integração e concorrência.
 
-## Execução por etapas
+SQL scripts são a fonte de verdade; EF apenas mapeia, sem migrations ou EnsureCreated paralelos. Frontend usa /api na mesma origem: Nginx no Docker e rewrite de frontend/vercel.json na Vercel preservam o prefixo para a API.
 
-Docker Desktop com Linux containers e Compose. Para desenvolvimento no host: SDK .NET 10.0.404 e Node 24. Dentro da pasta do projeto, execute um comando por vez e confira o resultado:
+## Uso real da IA e correções
 
-```powershell
-docker compose config --quiet
-docker compose up -d --wait --wait-timeout 180 sql
-docker compose run --rm db-init
-docker compose build backend
-docker compose up -d backend
-docker compose logs --tail 40 backend
-```
+Codex apoiou especificação, implementação, revisão, testes e implantação. A separação do frontend em componentes, hooks, serviços e utilitários tornou as responsabilidades explícitas. O histórico Git preserva a evolução, inclusive erros e correções, sem squash.
 
-As etapas acima foram executadas por Ian. O build abaixo também passou, incluindo npm test, TypeScript e Vite:
+Correções relevantes: import CSS vazio impedia build Vite; projeção de RankingDto antes da ordenação não era traduzida pelo EF, corrigida com agregação/ordenação/limite antes do DTO e teste ToQueryString; falta de rewrite causava 404 na Vercel, corrigida em frontend/vercel.json. A conexão Somee tinha alias diferente do SAN do certificado: configurado HostNameInCertificate=vb4400.mgmt.somee.com mantendo Encrypt=True e TrustServerCertificate=False. Nunca foi aplicada a proposta de ignorar a validação em produção.
 
-```powershell
-docker compose build frontend
-```
+O desenvolvimento inicial acumulou commits antes do primeiro push; isso foi corrigido no processo, sem fabricar um histórico retrospectivo. Fluxo atual: implementar, testar, documentar de forma proporcional, commit e push antes da próxima etapa.
 
-Frontend iniciado com `docker compose up -d frontend`; endereço local http://localhost:8080 conferido no navegador com SQL Server real. `JOYA_PORT` altera essa porta. SQL não publica porta no host; dados ficam em volume persistente. Não apagar volumes para diagnóstico.
+## Hospedagem
 
-O Compose contém senha de demonstração local, substituível por JOYA_SQL_PASSWORD. Não é configuração de produção. API ainda usa sa; usuário dedicado está pendente. SQL Server Developer é para desenvolvimento/testes. Sem autenticação; manter ambiente local.
+Frontend no Vercel Hobby, API Docker no Render Free e SQL Server 2022 Express na Somee gratuita (30 MB). Schema/seed remoto conferido: 6 clientes, 4 produtos, 6 pedidos e 6 itens. Credenciais ficam no segredo ConnectionStrings__Pedidos do Render e fora do Git. Health através da Vercel respondeu status ok; listagem e ranking consultaram SQL real.
 
-## API
+O Render gratuito pode adormecer e demorar para responder. Certificado Somee observado em 13/11/2026 tinha validade até 16/11/2026; renovação depende do provedor. Nenhuma garantia de renovação foi presumida.
 
-Base pública /api: GET /health, /clientes, /produtos, /pedidos/{id}, /pedidos e /relatorios/top-clientes; POST /pedidos. Documento: /api/openapi/v1.json. Filtros de pedidos: clienteId, inicio, fim, pagina, tamanho. Datas em yyyy-MM-dd.
+## Debug da query do enunciado — pendente de implementação e medição
 
-Exemplo de corpo (não executado nesta documentação):
+A investigação específica da Parte 4 ainda não foi entregue. Pontos identificáveis na query fornecida: YEAR(DataPedido) dificulta busca por índice; GROUP BY apenas Nome mistura homônimos; ORDER BY Total sem DESC ordena em sentido contrário ao ranking desejado; falta limitar aos cinco primeiros. O filtro em WHERE elimina linhas sem pedido do LEFT JOIN. A semântica dos joins deve ser alinhada ao ranking esperado.
 
-```json
-{"clienteId":1,"itens":[{"produtoId":1,"quantidade":2}]}
-```
+Faltam script SQL corrigido, comparação de resultados e investigação real com plano de execução e STATISTICS IO/TIME. Índices já existem no schema, mas não foram medidas diferenças de desempenho. A correção de tradução EF do ranking não substitui essa atividade.
 
-## Verificação e limitações
+## Pendências para a entrega
 
-Comandos previstos: `dotnet test tests/UnitTests` e `npm --prefix frontend run build`. O terminal do agente não acessa o daemon Docker e falhou no DNS de npm/NuGet. O PowerShell do usuário acessa Docker; o build da API baixou pacotes e concluiu. Depois, Ian executou com sucesso o target Docker de testes unitários .NET e o build frontend com testes, TypeScript e Vite. Evidências e limites em [refatoracao-frontend.md](docs/refatoracao-frontend.md); organização em [frontend/README.md](frontend/README.md).
+- Integração automatizada dos endpoints com SQL Server real: criação, consultas, filtros, paginação e erros; comprovar rollback e estoque concorrente.
+- Completar unitários para cliente inexistente e estoque insuficiente; pedido sem itens já está coberto.
+- Entregar investigação SQL da Parte 4 com script, plano e medições reais.
+- Validar subida completa com um comando e inicialização automática em ambiente limpo, sem apagar o volume existente.
+- Configuração AI First: CLAUDE.md, .claude/, hook, skill e uso real de MCP. O enunciado declara Codex obrigatório, mas outras partes exigem Claude; esclarecer essa divergência antes de alegar conformidade.
+- Atualizar o plano com ajustes/discordâncias efetivamente realizados; não inventar sessão Claude plan mode.
+- Vídeo de até dez minutos e envio do repositório/vídeo à recrutadora. Nenhum e-mail de entrega enviado.
 
-Testes automatizados de integração SQL, concorrência, E2E, CI, métricas SQL, lockfiles, MCP real, Claude obrigatório, guia de estudo/PDF e vídeo continuam pendentes. Dockerfile frontend usa npm install provisoriamente enquanto não há lockfile. Inspeção manual local aprovou listagem, ranking, filtros, detalhes e itens do formulário; criação de pedidos não foi exercitada nessa inspeção.
-
-## Processo obrigatório
-
-Uma etapa → testar → documentar resultado → commit → push confirmado → próxima etapa. Erro ou teste bloqueado interrompe a etapa. Nenhum merge sem testes aprovados e autorização de Ian.
-
-Os cinco commits anteriores foram acumulados sem push, contrariando o pedido. São preservados sem reescrever histórico nem simular envios anteriores. Este primeiro envio é um checkpoint privado explicitamente solicitado.
+Melhorias e diferenciais: refatoração arquitetural do backend solicitada por Ian; lockfile frontend; corrigir rótulo “Ambiente local” no site e metadados OpenAPI; Playwright E2E e GitHub Actions. Deploy online já existe; não comprova os obrigatórios pendentes.

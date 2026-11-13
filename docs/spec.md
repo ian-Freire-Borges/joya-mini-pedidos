@@ -35,7 +35,7 @@ Instantes gravados em UTC. Query aceita datas ISO yyyy-MM-dd interpretadas como 
 3. Filtros e paginação são executados no banco; ranking preserva clientes homônimos e fronteiras do período.
 4. UI acessível trata carregamento, vazio, erros, vários itens e envio único.
 5. Testes unitários e integração real, documentação e evidências distinguem preparação e execução.
-6. Claude obrigatório permanece pendente até uso real ou aceite explícito da substituição.
+6. Configuração AI First e MCP devem ter evidência de uso real. O enunciado declara Codex obrigatório e exige Claude em outras partes; esclarecer essa divergência, sem inventar uso de ferramentas.
 
 ## Decisões abertas
-Fuso do prazo; identidade Git confirmada (e-mail não fornecido); autorização de remoto; uso Claude; vídeo e medições SQL reais.
+Alinhamento da exigência Codex/Claude, uso real de MCP, vídeo e medições SQL. Identidade Git confirmada como Ian Freire Borges / ianxofreire@gmail.com; repositório privado e deploy foram autorizados e realizados.
