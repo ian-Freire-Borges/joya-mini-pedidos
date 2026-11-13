@@ -37,6 +37,8 @@ O Render gratuito pode adormecer por inatividade. Não foi contratado disco ou b
 
 ### Encaminhamento Vercel → Render
 
+Validação após push confirmado de 4fb9196 em 13/11/2026: https://joya-mini-pedidos.vercel.app/api/health respondeu {"status":"ok"}. UI pública carregou seis pedidos, seis clientes, quatro produtos e ranking de cinco clientes. Filtro cliente ID 1 retornou dois pedidos e limpar restaurou seis. Primeiro acesso retornou 502 próximo ao redeploy do Render; repetição após backend Live funcionou. Render confirmou 4fb9196 Live no deploy dep-dbrkcah7lnhs73db6aqg. Verificação manual de leitura, sem POST ou alteração de estoque; não substitui testes de criação, rollback e concorrência. Esta evidência substitui as pendências anteriores sobre encaminhamento /api. O texto "Ambiente local" continua no cabeçalho público e deve ser ajustado em etapa própria.
+
 O frontend usa URLs relativas /api. Criado frontend/vercel.json, pois Root Directory do projeto Vercel é frontend, com rewrite /api/:path* para https://joya-mini-pedidos-api.onrender.com/api/:path*. Preserva prefixo /api esperado por UsePathBase e mantém requisições do navegador na mesma origem. Configuração sem credenciais; não requer desabilitar CORS ou TLS. Fonte: https://vercel.com/docs/routing/rewrites. Publicação e validação do encaminhamento dependem de envio ao GitHub e novo deploy; existência local do arquivo não corrige o deploy anterior.
 
 ### Correção TLS da Somee — 13/11/2026
