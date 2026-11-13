@@ -4,6 +4,10 @@ Projeto de Ian Borges com API .NET 10/EF Core, React/TypeScript/Vite e SQL Serve
 
 ## Estado deste push inicial
 
+### Atualização de hospedagem — 13/11/2026
+
+Frontend publicado no Hobby gratuito: https://joya-mini-pedidos.vercel.app. O build passou após a correção CSS; a UI abriu, mas chamadas à API retornam 404 porque falta o encaminhamento ao backend. API publicada no Render Free: https://joya-mini-pedidos-api.onrender.com; /api/openapi/v1.json respondeu JSON. SQL Server externo e ConnectionStrings__Pedidos ainda ausentes, portanto as operações com banco não estão aprovadas. Veja [hospedagem.md](docs/hospedagem.md). O parágrafo abaixo registra o checkpoint anterior à hospedagem.
+
 Trabalho em andamento, sem aprovação de entrega. Banco inicializado e API compilada/iniciada no Docker do usuário. Frontend passou TypeScript, mas falhou no Vite por import CSS vazio; correção commitada, rebuild pendente. Testes automatizados não foram aprovados.
 
 Veja [checkpoint-inicial.md](docs/checkpoint-inicial.md) para histórico por commit, evidências e pendências; [spec.md](docs/spec.md) para contratos e regras; [ai-log.md](docs/ai-log.md) para o registro verdadeiro de assistência.

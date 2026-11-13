@@ -1,5 +1,9 @@
 # Registro verdadeiro de assistência
 
+## Hospedagem gratuita — 13/11/2026
+
+Ian autorizou Vercel e Render gratuitos. Frontend implantado do commit 19919dc na pasta frontend, plano Hobby; verificação de identidade feita por Ian. Build passou e UI abriu, mas integração /api retornou 404 sem rewrite. Serviço joya-mini-pedidos-api criado no Render Free (US$ 0/mês), runtime Docker, backend/Dockerfile e contexto raiz. Restore/publish passaram, container iniciou e /api/openapi/v1.json respondeu JSON. Falta SQL Server externo e conexão; nenhum segredo inventado ou gravado no Git. OpenAPI com servidor HTTP e metadata 200 no POST registrados como pendências. Sem alteração funcional/merge. Documentação em hospedagem.md; o próximo commit usa Ian Freire Borges / ianxofreire@gmail.com, associado à conta correta, confirmado nas configurações do GitHub. Não reescrever commits anteriores.
+
 ## Preparação do primeiro push — 13/11/2026
 
 Ian solicitou envio inicial privado à main bem documentado. O agente acumulou cinco commits sem push e avançou com bloqueios, descumprindo o fluxo pedido; falha reconhecida. Preservar os commits sem reescrita. README e checkpoint-inicial.md registram mudanças, motivos, validações e pendências. Esta etapa altera somente documentação/instruções. Nenhum merge ou teste aprovado foi inventado. Registros abaixo sobre ausência de push descrevem seus momentos originais. Confirmar envio por SHA remoto antes de avançar.
