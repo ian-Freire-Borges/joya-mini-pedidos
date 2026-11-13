@@ -23,6 +23,13 @@ Cada commit futuro registra o motivo e os comandos aplicáveis. Resultados pende
 
 ## Frontend
 
+### Validação executada por Ian no PowerShell
+
+- `docker compose config --quiet` concluiu sem erros; SQL Server ficou Healthy.
+- Inicializador executado e consulta confirmou 6 clientes, 4 produtos, 6 pedidos e 6 itens.
+- `docker compose build backend` concluiu restore/publish e criou imagem. API iniciou ouvindo em 8080; conexão HTTP com banco ainda não verificada.
+- Build frontend passou TypeScript, mas Vite falhou em PostCSS: ENOENT ao resolver `@import url('data:text/css,')`. Essa importação vazia foi um erro do Codex; removida sem alterar o restante dos estilos. Rebuild pendente.
+
 - Implementada UI React/TypeScript com listagem, filtros de cliente/período, paginação, detalhes dos itens, ranking, formulário com vários produtos e estados de erro/vazio/carregamento.
 - Envio protegido por ref e estado; totais da UI são estimativos, e somente produto/quantidade/cliente são enviados. Datas finais inclusivas viram próximo dia UTC.
 - Nginx preserva `/api`, encaminhando ao PathBase da API. Adicionado Dockerfile do frontend; build ainda não executado.
