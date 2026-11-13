@@ -1,0 +1,16 @@
+.env
+.env.*
+!.env.example
+node_modules/
+bin/
+obj/
+dist/
+.claude/settings.local.json
+*.user
+*.log
+.tools/
+TestResults/
+.dotnet-home/
+.mcp.json
+playwright-report/
+test-results/

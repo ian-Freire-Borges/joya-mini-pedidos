@@ -1,0 +1,48 @@
+name: joya-mini-pedidos
+services:
+  sql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: Y
+      MSSQL_PID: Developer
+      MSSQL_SA_PASSWORD: ${JOYA_SQL_PASSWORD:-JoyaLocalDemo!2026}
+    volumes:
+      - sql-data:/var/opt/mssql
+    healthcheck:
+      test: [CMD-SHELL, '/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$MSSQL_SA_PASSWORD" -C -b -Q "SELECT 1" -o /dev/null']
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+  db-init:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    user: root
+    environment:
+      MSSQL_SA_PASSWORD: ${JOYA_SQL_PASSWORD:-JoyaLocalDemo!2026}
+    volumes:
+      - ./database:/database:ro
+    entrypoint: [/bin/bash, /database/init.sh]
+    depends_on:
+      sql:
+        condition: service_healthy
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__Pedidos: Server=sql;Database=JoyaPedidos;User Id=sa;Password=${JOYA_SQL_PASSWORD:-JoyaLocalDemo!2026};Encrypt=True;TrustServerCertificate=True
+    depends_on:
+      db-init:
+        condition: service_completed_successfully
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports:
+      - '127.0.0.1:${JOYA_PORT:-8080}:80'
+    depends_on:
+      backend:
+        condition: service_started
+volumes:
+  sql-data:
