@@ -15,7 +15,7 @@ Requisitos: Docker com Linux containers e Docker Compose. Na raiz:
 docker compose up --build
 ```
 
-Acesso: http://localhost:8080. O Compose define SQL Server, execução automática de schema/seed, API e frontend com Nginx. Os serviços já foram compilados e iniciados por etapas; **a subida completa a partir de ambiente limpo com esse único comando ainda precisa ser validada**.
+Acesso: http://localhost:8080. O Compose define SQL Server, execução automática de schema/seed, API e frontend com Nginx. Validação em 13/11/2026: Ian executou `docker compose -p joya-validacao up -d --build`, com JOYA_PORT=8081, criando rede joya-validacao_default e volume novo joya-validacao_sql-data. Build completo aprovado, SQL Healthy, inicializador Exited e API/frontend Started. Navegador em http://localhost:8081 carregou seis pedidos, seis clientes, quatro produtos e ranking; /api/health respondeu status ok. Nenhum ajuste manual no banco ou inicialização separada foi necessário. Imagens e dependências já disponíveis puderam ser reutilizadas; não é medição de instalação/download em máquina sem cache.
 
 Dados persistem no volume sql-data. JOYA_PORT altera a porta local; JOYA_SQL_PASSWORD substitui a senha de demonstração local. Não apagar volumes para diagnosticar problemas. O SQL local usa sa e certificado de desenvolvimento aceito pela configuração Compose; essa configuração não deve ser reutilizada em produção. A implantação pública valida o certificado do SQL.
 
@@ -134,7 +134,6 @@ Referências: https://learn.microsoft.com/en-us/sql/t-sql/statements/set-statist
 ## Pendências para a entrega
 
 Unitários adicionais de cliente inexistente, estoque insuficiente, produto inexistente e preservação do preço decimal executados com sucesso conforme confirmação de Ian em 13/11/2026; contagem dessa execução não informada. Após a extração das regras usadas por PedidosService, integração repetida: 21 testes aprovados, 0 falhas, 0 ignorados, aproximadamente 5,2 s; build concluído em 5,6 s. O teste unitário interpreta o resultado da baixa; atualização SQL, rollback e concorrência são verificados pela integração real.
-- Validar subida completa com um comando e inicialização automática em ambiente limpo, sem apagar o volume existente.
 - Configuração AI First: CLAUDE.md, .claude/, hook, skill e uso real de MCP. O enunciado declara Codex obrigatório, mas outras partes exigem Claude; esclarecer essa divergência antes de alegar conformidade.
 - Atualizar o plano com ajustes/discordâncias efetivamente realizados; não inventar sessão Claude plan mode.
 - Vídeo de até dez minutos e envio do repositório/vídeo à recrutadora. Nenhum e-mail de entrega enviado.
