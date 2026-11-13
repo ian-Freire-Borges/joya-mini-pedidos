@@ -1,5 +1,9 @@
 # Plano real elaborado com Codex
 
+## Atualização do checkpoint inicial
+
+Ian autorizou primeiro push privado à main. Identidade Git confirmada. Banco inicializado e API compilada/iniciada pelo usuário. Frontend falhou no build; correção e088bb9 aguarda rebuild. Testes/CI/MCP/Claude pendentes. A partir deste envio: uma etapa, teste, documentação, commit e push confirmado antes da próxima; parar em erro. Afirmações anteriores sobre instalações e autorização são históricas. Ver docs/checkpoint-inicial.md.
+
 1. Inspecionar ambiente e escrever spec antes do código — realizado.
 2. Preparar estrutura, instruções e configurações AI verificadas na documentação oficial.
 3. Escrever schema SQL como fonte de verdade, seed idempotente e Compose.

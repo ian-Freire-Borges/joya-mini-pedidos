@@ -1,5 +1,11 @@
 # Matriz de requisitos
 
+## Atualização para o primeiro push
+
+Esta atualização prevalece sobre a tabela histórica abaixo. Ian confirmou SQL Healthy, inicialização do schema/seed e contagem 6/4/6/6. API compilou e iniciou em Docker. Frontend passou TypeScript, falhou no Vite e aguarda rebuild após correção e088bb9. Unitários não foram executados com sucesso; integração, concorrência, E2E e CI não existem ainda. README/checkpoint agora documentados. Primeiro push privado na main autorizado; sucesso depende de conferência remota. Claude e MCP seguem pendentes. Ver checkpoint-inicial.md para evidências por comando/commit.
+
+## Tabela anterior preservada para cronologia
+
 Estado em 13/11/2026. Implementado significa escrito; validado exige execução observada.
 
 | Exigência | Arquivo / comando | Estado |

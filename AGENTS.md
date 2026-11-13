@@ -8,3 +8,9 @@ Baixa e pedido em transação única, atualização condicional, produtos por Id
 Execute `dotnet test tests/UnitTests`, `dotnet test tests/IntegrationTests`, `npm --prefix frontend run build` quando ambiente disponível.
 Nunca apague volumes existentes, publique remoto ou exponha segredos sem autorização.
 Sem identidade Git confirmada, não invente autor nem e-mail para commits.
+
+## Fluxo obrigatório confirmado por Ian
+Uma etapa por vez: implementar, testar, documentar resultado, commit e push confirmado antes da próxima etapa.
+Pare em erro ou teste bloqueado. Não acumule etapas ou commits sem push.
+Nenhum merge sem testes aprovados e autorização do usuário.
+O primeiro push privado foi explicitamente solicitado como checkpoint parcial. Preserve os cinco commits anteriores; não reescreva histórico. Veja docs/checkpoint-inicial.md.

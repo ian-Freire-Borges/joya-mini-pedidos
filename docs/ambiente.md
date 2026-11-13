@@ -1,5 +1,11 @@
 # Ambiente — inspeção real de 13/11/2026
 
+## Atualização posterior às instalações
+
+SDK .NET 10.0.404 e Docker CLI/Engine 29.9.3 já instalados. Ian validou Docker Server, SQL Healthy, scripts e build/inicialização da API. Frontend aguarda rebuild após correção de CSS. O terminal do agente continua bloqueado no Docker e DNS npm/NuGet. As instruções de instalação abaixo são históricas; não repetir instalações. Evidências em docs/checkpoint-inicial.md.
+
+## Inspeção original preservada
+
 Implementação pausada a pedido de Ian para configurar primeiro o ambiente.
 
 | Componente | Observação real |
