@@ -84,6 +84,21 @@ SQL scripts são a fonte de verdade; EF apenas mapeia, sem migrations ou EnsureC
 
 A skill [criar-endpoint](.claude/skills/criar-endpoint/SKILL.md) é um manual específico do Joya para o agente: conferir cliente e estoque, buscar preço no servidor, manter a compra inteira na mesma transação e verificar testes antes de concluir uma alteração de endpoint. Não é código executado pela API e não substitui as validações implementadas ou os testes. `AGENTS.md` aponta para ela para uso pelo agente local; o arquivo também está na estrutura `.claude/skills/` pedida no enunciado. Invocação no Claude Code: `/criar-endpoint`; nesta sessão o agente lê o arquivo diretamente. A criação do arquivo, por si só, não demonstra acionamento automático nem uso pelo Claude Code.
 
+### Rules e hook
+
+`CLAUDE.md` reúne convenções de arquitetura, nomenclatura, contratos e comandos. `.claude/settings.json` registra um hook `PostToolUse` de `Write|Edit`, conforme a [referência oficial de hooks](https://code.claude.com/docs/en/hooks). O script `.claude/hooks/check-changes.mjs` recebe o evento JSON por stdin, verifica o caminho real do arquivo e recusa caminhos fora do projeto. Não executa comandos fornecidos pelo evento: escolhe comandos fixos e usa subprocessos sem shell.
+
+Após edição de código frontend, executa os testes Node existentes; após edição de backend/unitários, executa `dotnet test` ou o target Docker de unitários quando o SDK não existe. Mudanças no banco/integração geram lembrete da suíte SQL real, que não roda automaticamente após cada edição.
+
+Verificação manual em 14/11/2026: evento frontend executou seis testes aprovados; evento backend executou 21 unitários aprovados; evento com caminho externo foi recusado com código 2. O primeiro evento backend teve timeout de conexão do testhost; a repetição com temporários dentro da área permitida passou. O NuGet emitiu NU1900 por indisponibilidade da consulta de vulnerabilidades, portanto não há alegação de auditoria de dependências concluída. Configuração JSON e sintaxe Node verificadas. Não foi demonstrado acionamento automático pelo Claude Code nem pelo Codex; esta sessão chamou o script manualmente.
+
+Exemplo manual no PowerShell, da raiz:
+
+```powershell
+$evento = @{ hook_event_name = 'PostToolUse'; tool_name = 'Edit'; tool_input = @{ file_path = 'frontend/src/App.tsx' } }
+$evento | ConvertTo-Json -Compress -Depth 4 | node .claude/hooks/check-changes.mjs
+```
+
 O agente de IA apoiou especificação, implementação, revisão, testes e implantação. A separação do frontend em componentes, hooks, serviços e utilitários tornou as responsabilidades explícitas. O histórico Git preserva a evolução, inclusive erros e correções, sem squash.
 
 Correções relevantes: import CSS vazio impedia build Vite; projeção de RankingDto antes da ordenação não era traduzida pelo EF, corrigida com agregação/ordenação/limite antes do DTO e teste ToQueryString; falta de rewrite causava 404 na Vercel, corrigida em frontend/vercel.json. A conexão Somee tinha alias diferente do SAN do certificado: configurado HostNameInCertificate=vb4400.mgmt.somee.com mantendo Encrypt=True e TrustServerCertificate=False. Nunca foi aplicada a proposta de ignorar a validação em produção.
@@ -144,7 +159,7 @@ Checkout recuperado do GitHub no commit `0615929`, com histórico preservado. SD
 Instalada no Codex local a skill oficial `aspnet-core`, da coleção `openai/skills`. Aplicação efetiva: revisão do modelo Minimal API, composição de Program.cs, DI e separação entre contratos e persistência. O projeto mantém .NET 10, DbContext scoped, ProblemDetails centralizado e a transação de estoque. A revisão orienta extrair entidades/contratos/regras, rotas e responsabilidades de consulta/escrita em etapas verificadas. Não justifica trocar a stack, adicionar bibliotecas arquiteturais ou alterar contratos. Essa skill de apoio não substitui a skill customizada versionada exigida na configuração AI First.
 
 Unitários adicionais de cliente inexistente, estoque insuficiente, produto inexistente e preservação do preço decimal executados com sucesso conforme confirmação de Ian em 13/11/2026; contagem dessa execução não informada. Após a extração das regras usadas por PedidosService, integração repetida: 21 testes aprovados, 0 falhas, 0 ignorados, aproximadamente 5,2 s; build concluído em 5,6 s. O teste unitário interpreta o resultado da baixa; atualização SQL, rollback e concorrência são verificados pela integração real.
-- Configuração AI First: concluir CLAUDE.md, hook e uso real de MCP; a skill customizada já está em `.claude/skills/criar-endpoint/`, mas seu uso em uma alteração real ainda precisa ser demonstrado. Alinhar os requisitos sobre ferramentas de IA antes de alegar conformidade integral.
+- Configuração AI First: rules, hook e skill customizada versionados; falta demonstrar acionamento automático no cliente, uso da skill em alteração real e conexão MCP ao SQL Server. Alinhar os requisitos sobre ferramentas de IA antes de alegar conformidade integral.
 - Atualizar o plano com ajustes/discordâncias efetivamente realizados; não inventar sessão Claude plan mode.
 - Vídeo de até dez minutos e envio do repositório/vídeo à recrutadora. Nenhum e-mail de entrega enviado.
 

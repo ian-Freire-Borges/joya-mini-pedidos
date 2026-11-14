@@ -10,7 +10,7 @@ Este plano foi elaborado com um agente de IA. A revisão em plan mode exigida no
 4. Frontend: implementado e separado em componentes, hooks, serviços e utilitários; build/testes aprovados e leituras conferidas no navegador.
 5. Integração automatizada com SQL Server real: suíte implementada em tests/IntegrationTests, com Compose isolado, incluindo criação, rollback e concorrência. Executada por Ian no PowerShell em 13/11/2026: build concluído, 21 testes aprovados, 0 falhas e 0 ignorados (aproximadamente 5,1 s). Etapa pronta para commit e push, com resultados registrados no README.
 6. Debug da query fornecida: scripts corrigido e comparativo executados por Ian no SQL de testes. Verificações de resultados aprovadas; 100 mil pedidos, planos reais e três rodadas IO/TIME analisados. README registra números e limites: intervalo melhora estimativa e tempo observado, mas não reduz leituras nem gera seek nesse cenário. Nenhum índice adicional imposto sem evidência.
-7. AI First: skill customizada criar-endpoint criada e validada; rules CLAUDE.md, hook e MCP ainda pendentes. Falta demonstrar uso da skill em uma alteração real e alinhar os requisitos sobre Claude.
+7. AI First: skill customizada criar-endpoint criada e validada; rules CLAUDE.md e hook PostToolUse implementados. Eventos manuais do hook aprovaram seis testes frontend e 21 unitários e recusaram caminho externo. Falta acionamento automático no cliente, uso da skill em alteração real, MCP e alinhamento sobre Claude. Limites e falha inicial do testhost registrados no README.
 8. Entrega: README consolidado, deploy online funcional para leituras; vídeo e e-mail pendentes. CI e Playwright são diferenciais.
 
 ## Ajustes efetivamente realizados
