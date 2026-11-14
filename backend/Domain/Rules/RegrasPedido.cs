@@ -1,34 +1,5 @@
 namespace Pedidos.Api;
 
-public sealed class Cliente { public int Id { get; set; } public string Nome { get; set; } = ""; }
-public sealed class Produto { public int Id { get; set; } public string Nome { get; set; } = ""; public decimal Preco { get; set; } public int Estoque { get; set; } }
-public sealed class Pedido
-{
-    public long Id { get; set; }
-    public int ClienteId { get; set; }
-    public Cliente Cliente { get; set; } = null!;
-    public DateTime DataPedido { get; set; }
-    public List<ItemPedido> Itens { get; set; } = [];
-}
-public sealed class ItemPedido
-{
-    public long PedidoId { get; set; }
-    public int ProdutoId { get; set; }
-    public Produto Produto { get; set; } = null!;
-    public int Quantidade { get; set; }
-    public decimal PrecoUnitario { get; set; }
-}
-public sealed record CriarItem(int ProdutoId, int Quantidade);
-public sealed record CriarPedido(int ClienteId, List<CriarItem>? Itens);
-public sealed record ItemDto(int ProdutoId, string ProdutoNome, int Quantidade, decimal PrecoUnitario)
-{ public decimal Subtotal => Quantidade * PrecoUnitario; }
-public sealed record PedidoDto(long Id, int ClienteId, string ClienteNome, DateTime DataPedido, List<ItemDto> Itens)
-{ public decimal Total => Itens.Sum(i => i.Subtotal); }
-public sealed record PaginaDto<T>(List<T> Itens, int Pagina, int Tamanho, int TotalRegistros)
-{ public int TotalPaginas => (int)Math.Ceiling((decimal)TotalRegistros / Tamanho); }
-public sealed record RankingDto(int ClienteId, string Nome, decimal Total);
-public sealed class RegraException(int status, string message) : Exception(message) { public int Status => status; }
-
 public static class RegrasPedido
 {
     public static Cliente ExigirCliente(Cliente? cliente) =>

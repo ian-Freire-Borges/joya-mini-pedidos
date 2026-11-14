@@ -67,7 +67,8 @@ Validação observada: seis testes Node aprovados; target Docker de testes unit�
 |---|---|
 | backend/Program.cs | Rotas, ProblemDetails, OpenAPI e PathBase /api |
 | backend/PedidosService.cs | Consultas e criação transacional |
-| backend/Models.cs; PedidosDb.cs | Entidades, contratos, regras e mapeamento |
+| backend/Domain/Entities; Domain/Rules | Entidades e regras do pedido |
+| backend/Contracts; PedidosDb.cs | DTOs e mapeamento EF Core |
 | database/ | Schema SQL autoritativo e seed idempotente |
 | frontend/src/pages; components | Coordenação da página e apresentação |
 | frontend/src/hooks | Estado e ciclo de requisições/formulário |
@@ -176,8 +177,12 @@ Checkout recuperado do GitHub no commit `0615929`, com histórico preservado. SD
 Instalada no Codex local a skill oficial `aspnet-core`, da coleção `openai/skills`. Aplicação efetiva: revisão do modelo Minimal API, composição de Program.cs, DI e separação entre contratos e persistência. O projeto mantém .NET 10, DbContext scoped, ProblemDetails centralizado e a transação de estoque. A revisão orienta extrair entidades/contratos/regras, rotas e responsabilidades de consulta/escrita em etapas verificadas. Não justifica trocar a stack, adicionar bibliotecas arquiteturais ou alterar contratos. Essa skill de apoio não substitui a skill customizada versionada exigida na configuração AI First.
 
 Unitários adicionais de cliente inexistente, estoque insuficiente, produto inexistente e preservação do preço decimal executados com sucesso conforme confirmação de Ian em 13/11/2026; contagem dessa execução não informada. Após a extração das regras usadas por PedidosService, integração repetida: 21 testes aprovados, 0 falhas, 0 ignorados, aproximadamente 5,2 s; build concluído em 5,6 s. O teste unitário interpreta o resultado da baixa; atualização SQL, rollback e concorrência são verificados pela integração real.
-- Configuração AI First: rules, hook, skill e servidor MCP somente de leitura versionados e verificações manuais realizadas. Falta demonstrar acionamento automático no cliente e uso da skill em alteração real. Por orientação de Ian, a assistência é realizada pelo agente de IA; os nomes técnicos CLAUDE.md e .claude/ foram mantidos conforme a estrutura do enunciado.
+- Configuração AI First: rules, hook, skill e servidor MCP somente de leitura versionados e verificações manuais realizadas. O acionamento automático no cliente ainda não foi demonstrado; a skill foi aplicada na primeira etapa da refatoração do backend. Por orientação de Ian, a assistência é realizada pelo agente de IA; os nomes técnicos CLAUDE.md e .claude/ foram mantidos conforme a estrutura do enunciado.
 - Atualizar o plano com ajustes/discordâncias efetivamente realizados; não inventar sessão em plan mode.
 - Vídeo de até dez minutos e envio do repositório/vídeo à recrutadora. Nenhum e-mail de entrega enviado.
 
-Melhorias e diferenciais: refatoração arquitetural do backend solicitada por Ian; lockfile frontend; corrigir rótulo “Ambiente local” no site e metadados OpenAPI; Playwright E2E e GitHub Actions. Deploy online já existe; não comprova os obrigatórios pendentes.
+Melhorias e diferenciais: concluir extração das rotas e separação de leitura/escrita do backend; lockfile frontend; corrigir rótulo “Ambiente local” no site e metadados OpenAPI; Playwright E2E e GitHub Actions. Deploy online já existe; não comprova os obrigatórios pendentes.
+
+### Refatoração do backend - etapa A, 14/11/2026
+
+Aplicada a skill criar-endpoint para separar os 12 tipos de Models.cs em Domain/Entities, Contracts e Domain/Rules. Membros, corpos, namespace e contratos preservados, com comparação ao commit anterior. O hook foi acionado manualmente: a primeira execução atingiu timeout do testhost na sessão restrita; após liberar comunicação local, 21 unitários passaram. Ian executou 21 integrações com SQL Server real: zero falhas/ignorados, resumo 7,5 s e build 8,2 s. Rollback e concorrência permanecem cobertos. Nenhuma mudança de schema ou regra de negócio.
