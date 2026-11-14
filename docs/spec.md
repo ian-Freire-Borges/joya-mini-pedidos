@@ -35,7 +35,7 @@ Instantes gravados em UTC. Query aceita datas ISO yyyy-MM-dd interpretadas como 
 3. Filtros e paginação são executados no banco; ranking preserva clientes homônimos e fronteiras do período.
 4. UI acessível trata carregamento, vazio, erros, vários itens e envio único.
 5. Testes unitários e integração real, documentação e evidências distinguem preparação e execução.
-6. Configuração AI First e MCP devem ter evidência de uso real. Alinhar os requisitos sobre ferramentas de IA, sem inventar uso de ferramentas.
+6. Configuração AI First e MCP devem ter evidência de uso real. A assistência é realizada por agente de IA, conforme orientação de Ian; registrar o mecanismo efetivamente utilizado.
 
 ## Decisões abertas
-Alinhamento dos requisitos de ferramentas de IA, uso real de MCP, vídeo e medições SQL. Identidade Git confirmada como Ian Freire Borges / ianxofreire@gmail.com; repositório privado e deploy foram autorizados e realizados.
+Vídeo e revisão final de entrega. MCP utilizado pelo agente via cliente diagnóstico e medições SQL históricas documentadas no README. Identidade Git confirmada como Ian Freire Borges / ianxofreire@gmail.com; repositório privado e deploy foram autorizados e realizados.

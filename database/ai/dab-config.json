@@ -1,0 +1,40 @@
+{
+  "data-source": {
+    "database-type": "mssql",
+    "connection-string": "@env('MCP_SQL_CONNECTION_STRING')"
+  },
+  "runtime": {
+    "rest": { "enabled": false },
+    "graphql": { "enabled": false },
+    "host": { "mode": "production" },
+    "mcp": {
+      "enabled": true,
+      "path": "/mcp",
+      "dml-tools": {
+        "describe-entities": true,
+        "read-records": true,
+        "create-record": false,
+        "update-record": false,
+        "delete-record": false,
+        "execute-entity": false,
+        "aggregate-records": { "enabled": false }
+      }
+    }
+  },
+  "entities": {
+    "TopClientes2026": {
+      "source": {
+        "object": "dbo.McpTopClientes2026",
+        "type": "view",
+        "key-fields": ["ClienteId"]
+      },
+      "description": "Cinco clientes com maior total de pedidos em 2026 UTC; desempate pelo ID. Dados ficticios do banco de testes.",
+      "permissions": [{ "role": "anonymous", "actions": ["read"] }],
+      "fields": [
+        { "name": "ClienteId", "description": "Identificador do cliente; distingue homonimos." },
+        { "name": "Nome", "description": "Nome ficticio do cliente; pode repetir." },
+        { "name": "Total", "description": "Soma de quantidade vezes preco historico dos itens em 2026." }
+      ]
+    }
+  }
+}

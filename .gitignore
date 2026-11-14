@@ -11,7 +11,6 @@ dist/
 .tools/
 TestResults/
 .dotnet-home/
-.mcp.json
 playwright-report/
 test-results/
 .npm-cache/

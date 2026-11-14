@@ -1,6 +1,6 @@
 # Plano de implementação — agente de IA
 
-Este plano foi elaborado com um agente de IA. A revisão em plan mode exigida no enunciado ainda precisa de evidência de execução; os requisitos sobre ferramentas de IA precisam ser alinhados.
+Este plano foi elaborado com um agente de IA. A revisão em plan mode exigida no enunciado ainda precisa de evidência de execução; Ian definiu que o trabalho é realizado por agente de IA, preservando os nomes de arquivos pedidos no enunciado.
 
 ## Sequência e estado
 
@@ -10,14 +10,14 @@ Este plano foi elaborado com um agente de IA. A revisão em plan mode exigida no
 4. Frontend: implementado e separado em componentes, hooks, serviços e utilitários; build/testes aprovados e leituras conferidas no navegador.
 5. Integração automatizada com SQL Server real: suíte implementada em tests/IntegrationTests, com Compose isolado, incluindo criação, rollback e concorrência. Executada por Ian no PowerShell em 13/11/2026: build concluído, 21 testes aprovados, 0 falhas e 0 ignorados (aproximadamente 5,1 s). Etapa pronta para commit e push, com resultados registrados no README.
 6. Debug da query fornecida: scripts corrigido e comparativo executados por Ian no SQL de testes. Verificações de resultados aprovadas; 100 mil pedidos, planos reais e três rodadas IO/TIME analisados. README registra números e limites: intervalo melhora estimativa e tempo observado, mas não reduz leituras nem gera seek nesse cenário. Nenhum índice adicional imposto sem evidência.
-7. AI First: skill customizada criar-endpoint criada e validada; rules CLAUDE.md e hook PostToolUse implementados. Eventos manuais do hook aprovaram seis testes frontend e 21 unitários e recusaram caminho externo. Falta acionamento automático no cliente, uso da skill em alteração real, MCP e alinhamento sobre Claude. Limites e falha inicial do testhost registrados no README.
+7. AI First: skill customizada criar-endpoint criada e validada; rules CLAUDE.md e hook PostToolUse implementados. Eventos manuais do hook aprovaram seis testes frontend e 21 unitários e recusaram caminho externo. MCP validado no SQL de testes por cliente diagnóstico: initialize, tools/list, describe_entities e read_records, SQL MCP Server 2.1.5, protocolo 2025-03-26, apenas leitura. Falta acionamento automático no cliente e uso da skill em alteração real. O MCP foi efetivamente utilizado pelo agente de IA via cliente Node; não há etapa adicional condicionada a outro agente. Limites e falha inicial do testhost registrados no README.
 8. Entrega: README consolidado, deploy online funcional para leituras; vídeo e e-mail pendentes. CI e Playwright são diferenciais.
 
 ## Ajustes efetivamente realizados
 
-- Criada a skill customizada `.claude/skills/criar-endpoint/SKILL.md` por prioridade de Ian. O manual reúne as verificações específicas de preço, estoque transacional, contratos e testes. `AGENTS.md` direciona sua leitura. A criação não comprova uso automático pelo cliente; hook, rules CLAUDE.md e MCP seguem pendentes.
+- Criada a skill customizada `.claude/skills/criar-endpoint/SKILL.md` por prioridade de Ian. O manual reúne as verificações específicas de preço, estoque transacional, contratos e testes. `AGENTS.md` direciona sua leitura. A criação não comprova uso automático pelo cliente; os resultados posteriores de rules, hook e MCP estão registrados na sequência e no README.
 
-- Retomada local em 14/11/2026: histórico recuperado no commit 0615929; 21 unitários .NET, seis testes frontend e build frontend aprovados pelo agente. Ian executou a integração Docker/SQL Server real: 21 aprovados, zero falhas e zero ignorados. Baseline confirmado antes da refatoração. A configuração AI First não estava publicada nesse checkout e continua pendente.
+- Retomada local em 14/11/2026: histórico recuperado no commit 0615929; 21 unitários .NET, seis testes frontend e build frontend aprovados pelo agente. Ian executou a integração Docker/SQL Server real: 21 aprovados, zero falhas e zero ignorados. Baseline confirmado antes da refatoração. A configuração AI First não estava publicada nesse checkout e foi implementada nas etapas seguintes.
 - Skill oficial aspnet-core instalada no Codex e aplicada à revisão da arquitetura existente. Manter Minimal APIs, DI scoped, ProblemDetails e SQL transacional; separar responsabilidades sem introduzir novas camadas/bibliotecas. Ainda falta a skill customizada do projeto exigida no teste.
 
 - Ian pediu organização semelhante ao código do Party Time; refatorado o frontend antes de avançar na arquitetura do backend, preservando o visual.

@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "joya-sql-readonly": {
+      "type": "http",
+      "url": "http://localhost:5005/mcp"
+    }
+  }
+}

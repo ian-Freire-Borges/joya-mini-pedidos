@@ -1,6 +1,6 @@
 # Mini Gestão de Pedidos — Joya Solutions
 
-Aplicação .NET 10, EF Core, React/TypeScript e SQL Server 2022, desenvolvida com assistência de um **agente de IA**. Conexão MCP ao SQL Server ainda pendente.
+Aplicação .NET 10, EF Core, React/TypeScript e SQL Server 2022, desenvolvida com assistência de um **agente de IA**. MCP local somente de leitura utilizado pelo agente de IA por meio de um cliente de diagnóstico.
 
 - Aplicação: https://joya-mini-pedidos.vercel.app/
 - API: https://joya-mini-pedidos-api.onrender.com/api
@@ -57,7 +57,7 @@ Ao terminar, remova apenas os containers/rede de testes (não apaga volumes da a
 docker compose -f docker-compose.tests.yml down
 ```
 
-Casos implementados: criação com itens/preço do servidor/Location/estoque, fotografia de preço, cliente e produto inexistentes, pedido sem itens, quantidade inválida, duplicatas, tentativa de enviar preço, estoque insuficiente, rollback após baixa do primeiro produto, concorrência do último item, consultas com período/cliente/paginação e ranking com homônimos. **Validação em 13/11/2026:** Ian executou o comando acima no PowerShell; build concluído e 21 testes passaram, 0 falhas e 0 ignorados, em aproximadamente 5,1 s. Saída conferida na conversa. O terminal do agente não acessa o Docker; a execução foi realizada no ambiente do usuário. Unitários de cliente inexistente/estoque insuficiente continuam pendentes; os casos acima são de integração.
+Casos implementados: criação com itens/preço do servidor/Location/estoque, fotografia de preço, cliente e produto inexistentes, pedido sem itens, quantidade inválida, duplicatas, tentativa de enviar preço, estoque insuficiente, rollback após baixa do primeiro produto, concorrência do último item, consultas com período/cliente/paginação e ranking com homônimos. **Validação em 13/11/2026:** Ian executou o comando acima no PowerShell; build concluído e 21 testes passaram, 0 falhas e 0 ignorados, em aproximadamente 5,1 s. Saída conferida na conversa. O terminal do agente não acessa o Docker; a execução foi realizada no ambiente do usuário. Essa execução histórica refere-se à integração; a validação local mais recente dos unitários está registrada abaixo.
 
 Validação observada: seis testes Node aprovados; target Docker de testes unitários .NET concluído com sucesso por Ian; build TypeScript/Vite aprovado. Inspeção manual local e pública confirmou catálogos, seis pedidos, ranking e filtro por cliente. No site público, cliente 1 retornou dois pedidos e limpar restaurou seis. Essa inspeção não testou criação, rollback, concorrência nem navegação entre várias páginas.
 
@@ -82,7 +82,7 @@ SQL scripts são a fonte de verdade; EF apenas mapeia, sem migrations ou EnsureC
 
 ### Skill customizada do projeto
 
-A skill [criar-endpoint](.claude/skills/criar-endpoint/SKILL.md) é um manual específico do Joya para o agente: conferir cliente e estoque, buscar preço no servidor, manter a compra inteira na mesma transação e verificar testes antes de concluir uma alteração de endpoint. Não é código executado pela API e não substitui as validações implementadas ou os testes. `AGENTS.md` aponta para ela para uso pelo agente local; o arquivo também está na estrutura `.claude/skills/` pedida no enunciado. Invocação no Claude Code: `/criar-endpoint`; nesta sessão o agente lê o arquivo diretamente. A criação do arquivo, por si só, não demonstra acionamento automático nem uso pelo Claude Code.
+A skill [criar-endpoint](.claude/skills/criar-endpoint/SKILL.md) é um manual específico do Joya para o agente: conferir cliente e estoque, buscar preço no servidor, manter a compra inteira na mesma transação e verificar testes antes de concluir uma alteração de endpoint. Não é código executado pela API e não substitui as validações implementadas ou os testes. `AGENTS.md` aponta para ela para uso pelo agente local; o arquivo também está na estrutura `.claude/skills/` pedida no enunciado. O agente lê e aplica o arquivo diretamente, conforme a orientação de AGENTS.md. Criar o arquivo não demonstra aplicação em uma mudança de código; essa evidência será registrada na etapa correspondente.
 
 ### Rules e hook
 
@@ -90,7 +90,7 @@ A skill [criar-endpoint](.claude/skills/criar-endpoint/SKILL.md) é um manual es
 
 Após edição de código frontend, executa os testes Node existentes; após edição de backend/unitários, executa `dotnet test` ou o target Docker de unitários quando o SDK não existe. Mudanças no banco/integração geram lembrete da suíte SQL real, que não roda automaticamente após cada edição.
 
-Verificação manual em 14/11/2026: evento frontend executou seis testes aprovados; evento backend executou 21 unitários aprovados; evento com caminho externo foi recusado com código 2. O primeiro evento backend teve timeout de conexão do testhost; a repetição com temporários dentro da área permitida passou. O NuGet emitiu NU1900 por indisponibilidade da consulta de vulnerabilidades, portanto não há alegação de auditoria de dependências concluída. Configuração JSON e sintaxe Node verificadas. Não foi demonstrado acionamento automático pelo Claude Code nem pelo Codex; esta sessão chamou o script manualmente.
+Verificação manual em 14/11/2026: evento frontend executou seis testes aprovados; evento backend executou 21 unitários aprovados; evento com caminho externo foi recusado com código 2. O primeiro evento backend teve timeout de conexão do testhost; a repetição com temporários dentro da área permitida passou. O NuGet emitiu NU1900 por indisponibilidade da consulta de vulnerabilidades, portanto não há alegação de auditoria de dependências concluída. Configuração JSON e sintaxe Node verificadas. Nesta sessão o agente chamou o script manualmente; não houve acionamento automático pelo cliente.
 
 Exemplo manual no PowerShell, da raiz:
 
@@ -98,6 +98,23 @@ Exemplo manual no PowerShell, da raiz:
 $evento = @{ hook_event_name = 'PostToolUse'; tool_name = 'Edit'; tool_input = @{ file_path = 'frontend/src/App.tsx' } }
 $evento | ConvertTo-Json -Compress -Depth 4 | node .claude/hooks/check-changes.mjs
 ```
+
+### MCP com SQL Server de testes
+
+Configuração baseada no [SQL MCP Server da Microsoft](https://learn.microsoft.com/en-us/azure/data-api-builder/mcp/overview). O perfil opcional `ai` do Compose de testes inicia o Data API builder com digest fixado. A porta é publicada somente em `127.0.0.1:5005`. O inicializador cria uma view de ranking de 2026 e o login `joya_mcp_reader`, com SELECT e VIEW DEFINITION apenas nessa view. A senha publicada é exclusiva deste ambiente fictício e descartável; não reutilizar na hospedagem. Ferramentas de escrita e execução de procedures estão desativadas; REST e GraphQL também.
+
+Na raiz, execute cada comando separadamente, sem outra suíte de integração simultânea:
+
+```powershell
+docker compose -f docker-compose.tests.yml --profile ai up -d sql-mcp
+node scripts/check-mcp.mjs
+```
+
+O script realiza initialize, tools/list, describe_entities e read_records, confere que somente as duas ferramentas de leitura foram expostas e valida limite, IDs e ordenação do ranking. Evidência local: `TestResults/mcp/evidence.json`, ignorada pelo Git. Para diagnóstico de inicialização: `docker compose -f docker-compose.tests.yml logs --tail 100 mcp-init sql-mcp`.
+
+Uso efetivo em 14/11/2026: Ian iniciou os containers no terminal do Windows e o agente executou o cliente diagnóstico. SQL MCP Server 2.1.5, protocolo 2025-03-26; descoberta, metadados e leitura do ranking do banco real concluídos. Retornaram quatro clientes: Diego Souza 749,50, Bruno Costa 449,70, Ana Silva ID 1 com 299,80 e Ana Silva ID 2 com 299,80, refletindo o banco de testes após a integração. Não são métricas de produção.
+
+`.mcp.json` registra o servidor HTTP `joya-sql-readonly` em `http://localhost:5005/mcp`, sem credenciais de hospedagem. Nesta sessão o agente de IA utilizou o cliente Node para descobrir ferramentas, ler metadados e consultar o ranking pelo protocolo MCP. Esse é o mecanismo efetivamente usado; o cadastro do servidor não torna suas ferramentas automaticamente disponíveis ao chat. Nunca rode `database/ai/readonly-mcp.sql` na Somee.
 
 O agente de IA apoiou especificação, implementação, revisão, testes e implantação. A separação do frontend em componentes, hooks, serviços e utilitários tornou as responsabilidades explícitas. O histórico Git preserva a evolução, inclusive erros e correções, sem squash.
 
@@ -159,8 +176,8 @@ Checkout recuperado do GitHub no commit `0615929`, com histórico preservado. SD
 Instalada no Codex local a skill oficial `aspnet-core`, da coleção `openai/skills`. Aplicação efetiva: revisão do modelo Minimal API, composição de Program.cs, DI e separação entre contratos e persistência. O projeto mantém .NET 10, DbContext scoped, ProblemDetails centralizado e a transação de estoque. A revisão orienta extrair entidades/contratos/regras, rotas e responsabilidades de consulta/escrita em etapas verificadas. Não justifica trocar a stack, adicionar bibliotecas arquiteturais ou alterar contratos. Essa skill de apoio não substitui a skill customizada versionada exigida na configuração AI First.
 
 Unitários adicionais de cliente inexistente, estoque insuficiente, produto inexistente e preservação do preço decimal executados com sucesso conforme confirmação de Ian em 13/11/2026; contagem dessa execução não informada. Após a extração das regras usadas por PedidosService, integração repetida: 21 testes aprovados, 0 falhas, 0 ignorados, aproximadamente 5,2 s; build concluído em 5,6 s. O teste unitário interpreta o resultado da baixa; atualização SQL, rollback e concorrência são verificados pela integração real.
-- Configuração AI First: rules, hook e skill customizada versionados; falta demonstrar acionamento automático no cliente, uso da skill em alteração real e conexão MCP ao SQL Server. Alinhar os requisitos sobre ferramentas de IA antes de alegar conformidade integral.
-- Atualizar o plano com ajustes/discordâncias efetivamente realizados; não inventar sessão Claude plan mode.
+- Configuração AI First: rules, hook, skill e servidor MCP somente de leitura versionados e verificações manuais realizadas. Falta demonstrar acionamento automático no cliente e uso da skill em alteração real. Por orientação de Ian, a assistência é realizada pelo agente de IA; os nomes técnicos CLAUDE.md e .claude/ foram mantidos conforme a estrutura do enunciado.
+- Atualizar o plano com ajustes/discordâncias efetivamente realizados; não inventar sessão em plan mode.
 - Vídeo de até dez minutos e envio do repositório/vídeo à recrutadora. Nenhum e-mail de entrega enviado.
 
 Melhorias e diferenciais: refatoração arquitetural do backend solicitada por Ian; lockfile frontend; corrigir rótulo “Ambiente local” no site e metadados OpenAPI; Playwright E2E e GitHub Actions. Deploy online já existe; não comprova os obrigatórios pendentes.
