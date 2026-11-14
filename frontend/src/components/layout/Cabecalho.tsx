@@ -6,7 +6,7 @@ export function Cabecalho() {
         <span>joya<span className="brand-sub">mini gestão</span></span>
       </a>
       <span className="workspace">
-        Gestão de pedidos <span className="dot" /> Ambiente local
+        Gestão de pedidos <span className="dot" /> Ambiente de demonstração
       </span>
     </header>
   );

@@ -1,5 +1,9 @@
 # Mini Gestão de Pedidos — Joya Solutions
 
+### Correção do cabeçalho — 14/11/2026
+
+Rótulo alterado de “Ambiente local” para “Ambiente de demonstração” via apply_patch após revisão real em Plan mode no Codex CLI. Ian ajustou o plano para verificar apenas o frontend e a apresentação, sem repetir testes backend para uma troca literal. O hook automático executou os testes frontend após editar Cabecalho.tsx e docs/plan.md: registro PostToolUse com sessão 01a1dbe0-e5a0-7932-85ce-f59e1e0fc2d1 e chamada exec-26d05c69-f404-4cc2-b440-ca4e95caf2e7, checks frontend, status passed. Não foi acionamento manual. A invocação adicional por npm.ps1 encontrou bloqueio de política PowerShell; usando npm.cmd, seis testes e build TypeScript/Vite passaram sem mudar a política do sistema. Imagem frontend reconstruída no Docker por Ian; conferência visual local confirmou o novo texto, acentuação e encaixe do cabeçalho. Health local retornou HTTP 200 e status ok.
+
 Aplicação .NET 10, EF Core, React/TypeScript e SQL Server 2022, desenvolvida com assistência de um **agente de IA**. MCP local somente de leitura utilizado pelo agente de IA por meio de um cliente de diagnóstico.
 
 - Aplicação: https://joya-mini-pedidos.vercel.app/
@@ -106,9 +110,9 @@ $evento | ConvertTo-Json -Compress -Depth 4 | node .claude/hooks/check-changes.m
 
 `.codex/hooks.json` configura PostToolUse para apply_patch/Write/Edit, usando o mesmo script de verificações. O script reconhece patches com vários arquivos e registra evento, arquivos e identificadores de sessão/ferramenta em `TestResults/hooks/events.jsonl`, sem registrar o conteúdo do patch. Registros de chamadas manuais têm identificadores ausentes; não são evidência de execução automática.
 
-Conforme a [documentação do Codex](https://learn.chatgpt.com/docs/hooks), abra o Codex na raiz do projeto e revise/confie na definição em `/hooks`. Não modifique o arquivo de confiança para pular essa etapa. A configuração preparada passou em eventos manuais: seis testes frontend, 21 unitários e recusa de caminho externo. A execução automática ainda aguarda ativação e edição real pelo cliente.
+Conforme a [documentação do Codex](https://learn.chatgpt.com/docs/hooks), abra o Codex na raiz do projeto e revise/confie na definição em `/hooks`. Não modifique o arquivo de confiança para pular essa etapa. A configuração preparada passou em eventos manuais: seis testes frontend, 21 unitários e recusa de caminho externo. Ian revisou, confiou e ativou o hook no Codex CLI; a execução automática após a edição real do cabeçalho foi comprovada no registro local de eventos.
 
-Para a evidência de planejamento, use `/plan` antes da próxima alteração e revise a proposta. Uma revisão feita agora deve ser registrada como revisão final, não como planejamento anterior ao desenvolvimento. Uma tarefa pequena e real é corrigir o rótulo “Ambiente local” mostrado também no site publicado. Depois de revisar o plano e autorizar a execução, conferir a saída do hook automático e registrar o resultado real.
+A revisão final foi realizada em `/plan` antes da correção do rótulo do cabeçalho. Ian retirou do plano a repetição de testes backend por não haver mudança nessa parte. O agente implementou depois da aprovação do plano; hook automático e verificações frontend estão registrados. Esta é evidência de planejamento de uma alteração posterior, não de uma sessão anterior ao desenvolvimento inicial.
 
 ### MCP com SQL Server de testes
 
@@ -187,11 +191,11 @@ Checkout recuperado do GitHub no commit `0615929`, com histórico preservado. SD
 Instalada no Codex local a skill oficial `aspnet-core`, da coleção `openai/skills`. Aplicação efetiva: revisão do modelo Minimal API, composição de Program.cs, DI e separação entre contratos e persistência. O projeto mantém .NET 10, DbContext scoped, ProblemDetails centralizado e a transação de estoque. A revisão orienta extrair entidades/contratos/regras, rotas e responsabilidades de consulta/escrita em etapas verificadas. Não justifica trocar a stack, adicionar bibliotecas arquiteturais ou alterar contratos. Essa skill de apoio não substitui a skill customizada versionada exigida na configuração AI First.
 
 Unitários adicionais de cliente inexistente, estoque insuficiente, produto inexistente e preservação do preço decimal executados com sucesso conforme confirmação de Ian em 13/11/2026; contagem dessa execução não informada. Após a extração das regras usadas por PedidosService, integração repetida: 21 testes aprovados, 0 falhas, 0 ignorados, aproximadamente 5,2 s; build concluído em 5,6 s. O teste unitário interpreta o resultado da baixa; atualização SQL, rollback e concorrência são verificados pela integração real.
-- Configuração AI First: rules, hook, skill e servidor MCP somente de leitura versionados e verificações manuais realizadas. O acionamento automático no cliente ainda não foi demonstrado; a skill foi aplicada na primeira etapa da refatoração do backend. Por orientação de Ian, a assistência é realizada pelo agente de IA; os nomes técnicos CLAUDE.md e .claude/ foram mantidos conforme a estrutura do enunciado.
+- Configuração AI First: rules, hook, skill e servidor MCP somente de leitura versionados e verificações manuais realizadas. O hook automático foi demonstrado no Codex CLI após a correção do cabeçalho; a skill foi aplicada na refatoração do backend. Por orientação de Ian, a assistência é realizada pelo agente de IA; os nomes técnicos CLAUDE.md e .claude/ foram mantidos conforme a estrutura do enunciado.
 - Atualizar o plano com ajustes/discordâncias efetivamente realizados; não inventar sessão em plan mode.
 - Vídeo de até dez minutos e envio do repositório/vídeo à recrutadora. Nenhum e-mail de entrega enviado.
 
-Melhorias e diferenciais: lockfile frontend; corrigir rótulo “Ambiente local” no site e metadados OpenAPI; Playwright E2E e GitHub Actions. Deploy online já existe; não comprova os obrigatórios pendentes.
+Melhorias e diferenciais: lockfile frontend; melhorar metadados OpenAPI; Playwright E2E e GitHub Actions. Deploy online já existe; não comprova os obrigatórios pendentes.
 
 ### Refatoração do backend - etapa A, 14/11/2026
 
@@ -209,6 +213,6 @@ PedidosService substituído por Application/PedidosConsultas, Application/Criaca
 
 Após a refatoração, Ian parou os serviços de testes e iniciou `docker compose --progress plain up -d --build`. O agente verificou http://localhost:8080 no navegador, com layout e listagem carregados. Consultas HTTP retornaram 200 para a página, /api/health (status ok), seis clientes, quatro produtos, seis pedidos e ranking de 2026. As duas Ana Silva permaneceram separadas por ID; totais locais do ranking: 749,50, 449,70, 299,80 e 149,90. Esta conferência final foi de leitura; criação, estoque, rollback e concorrência foram validados pelas 21 integrações da etapa C.
 
-Site público, health pela Vercel e health direto no Render responderam HTTP 200, com status ok nos dois endpoints de saúde. Isso confirma disponibilidade naquele momento, não a revisão exata implantada. O roteiro PDF do vídeo foi entregue separadamente a Ian. Permanecem gravação, acesso da avaliadora ao repositório público/vídeo e envio. Nenhum e-mail foi enviado pelo agente. Playwright e CI continuam diferenciais não implementados; execução automática do hook e sessão em plan mode não foram demonstradas.
+Site público, health pela Vercel e health direto no Render responderam HTTP 200, com status ok nos dois endpoints de saúde. Isso confirma disponibilidade naquele momento, não a revisão exata implantada. O roteiro PDF do vídeo foi entregue separadamente a Ian. Permanecem gravação, acesso da avaliadora ao repositório público/vídeo e envio. Nenhum e-mail foi enviado pelo agente. Playwright e CI continuam diferenciais não implementados; execução automática do hook e revisão final em Plan mode foram demonstradas na correção posterior do cabeçalho.
 
 Repositório tornado público por Ian em 14/11/2026; confirmado pelo agente com GET não autenticado à API do GitHub (`visibility: public`, `private: false`). Não é necessário convite individual para leitura do repositório.
