@@ -65,7 +65,8 @@ Validação observada: seis testes Node aprovados; target Docker de testes unit�
 
 | Caminho | Responsabilidade |
 |---|---|
-| backend/Program.cs | Rotas, ProblemDetails, OpenAPI e PathBase /api |
+| backend/Program.cs | Composição, OpenAPI e PathBase /api |
+| backend/Endpoints; Middleware | Rotas e tratamento centralizado de erros |
 | backend/PedidosService.cs | Consultas e criação transacional |
 | backend/Domain/Entities; Domain/Rules | Entidades e regras do pedido |
 | backend/Contracts; PedidosDb.cs | DTOs e mapeamento EF Core |
@@ -186,3 +187,7 @@ Melhorias e diferenciais: concluir extração das rotas e separação de leitura
 ### Refatoração do backend - etapa A, 14/11/2026
 
 Aplicada a skill criar-endpoint para separar os 12 tipos de Models.cs em Domain/Entities, Contracts e Domain/Rules. Membros, corpos, namespace e contratos preservados, com comparação ao commit anterior. O hook foi acionado manualmente: a primeira execução atingiu timeout do testhost na sessão restrita; após liberar comunicação local, 21 unitários passaram. Ian executou 21 integrações com SQL Server real: zero falhas/ignorados, resumo 7,5 s e build 8,2 s. Rollback e concorrência permanecem cobertos. Nenhuma mudança de schema ou regra de negócio.
+
+### Refatoração do backend - etapa B, 14/11/2026
+
+Rotas extraídas para Endpoints (pedidos, catálogos, relatórios e saúde) e tratamento de erros para Middleware/ApiErrors.cs. Program.cs mantém composição e ordem do pipeline; /api, Location e ProblemDetails preservados. Aplicadas as skills criar-endpoint e aspnet-core. Hook manual aprovou 21 unitários. Ian executou 21 integrações SQL Server aprovadas, zero falhas/ignorados: resumo 11,8 s e build 12,4 s.
