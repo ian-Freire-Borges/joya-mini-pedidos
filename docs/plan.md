@@ -10,10 +10,12 @@ Este plano foi elaborado com um agente de IA. A revisão em plan mode exigida no
 4. Frontend: implementado e separado em componentes, hooks, serviços e utilitários; build/testes aprovados e leituras conferidas no navegador.
 5. Integração automatizada com SQL Server real: suíte implementada em tests/IntegrationTests, com Compose isolado, incluindo criação, rollback e concorrência. Executada por Ian no PowerShell em 13/11/2026: build concluído, 21 testes aprovados, 0 falhas e 0 ignorados (aproximadamente 5,1 s). Etapa pronta para commit e push, com resultados registrados no README.
 6. Debug da query fornecida: scripts corrigido e comparativo executados por Ian no SQL de testes. Verificações de resultados aprovadas; 100 mil pedidos, planos reais e três rodadas IO/TIME analisados. README registra números e limites: intervalo melhora estimativa e tempo observado, mas não reduz leituras nem gera seek nesse cenário. Nenhum índice adicional imposto sem evidência.
-7. AI First: rules, hook, skill e MCP pendentes de implementação/uso real e alinhamento sobre Claude.
+7. AI First: skill customizada criar-endpoint criada e validada; rules CLAUDE.md, hook e MCP ainda pendentes. Falta demonstrar uso da skill em uma alteração real e alinhar os requisitos sobre Claude.
 8. Entrega: README consolidado, deploy online funcional para leituras; vídeo e e-mail pendentes. CI e Playwright são diferenciais.
 
 ## Ajustes efetivamente realizados
+
+- Criada a skill customizada `.claude/skills/criar-endpoint/SKILL.md` por prioridade de Ian. O manual reúne as verificações específicas de preço, estoque transacional, contratos e testes. `AGENTS.md` direciona sua leitura. A criação não comprova uso automático pelo cliente; hook, rules CLAUDE.md e MCP seguem pendentes.
 
 - Retomada local em 14/11/2026: histórico recuperado no commit 0615929; 21 unitários .NET, seis testes frontend e build frontend aprovados pelo agente. Ian executou a integração Docker/SQL Server real: 21 aprovados, zero falhas e zero ignorados. Baseline confirmado antes da refatoração. A configuração AI First não estava publicada nesse checkout e continua pendente.
 - Skill oficial aspnet-core instalada no Codex e aplicada à revisão da arquitetura existente. Manter Minimal APIs, DI scoped, ProblemDetails e SQL transacional; separar responsabilidades sem introduzir novas camadas/bibliotecas. Ainda falta a skill customizada do projeto exigida no teste.
