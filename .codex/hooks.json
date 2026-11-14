@@ -1,0 +1,18 @@
+{
+  "description": "Verifica mudanças do Joya após edições do agente. Revisar e confiar em /hooks antes de usar.",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "^apply_patch$|Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$(git rev-parse --show-toplevel)/.claude/hooks/check-changes.mjs\"",
+            "timeout": 360,
+            "statusMessage": "Verificando alterações do Joya"
+          }
+        ]
+      }
+    ]
+  }
+}

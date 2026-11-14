@@ -102,6 +102,14 @@ $evento = @{ hook_event_name = 'PostToolUse'; tool_name = 'Edit'; tool_input = @
 $evento | ConvertTo-Json -Compress -Depth 4 | node .claude/hooks/check-changes.mjs
 ```
 
+### Hook nativo no Codex e revisão em modo Plano
+
+`.codex/hooks.json` configura PostToolUse para apply_patch/Write/Edit, usando o mesmo script de verificações. O script reconhece patches com vários arquivos e registra evento, arquivos e identificadores de sessão/ferramenta em `TestResults/hooks/events.jsonl`, sem registrar o conteúdo do patch. Registros de chamadas manuais têm identificadores ausentes; não são evidência de execução automática.
+
+Conforme a [documentação do Codex](https://learn.chatgpt.com/docs/hooks), abra o Codex na raiz do projeto e revise/confie na definição em `/hooks`. Não modifique o arquivo de confiança para pular essa etapa. A configuração preparada passou em eventos manuais: seis testes frontend, 21 unitários e recusa de caminho externo. A execução automática ainda aguarda ativação e edição real pelo cliente.
+
+Para a evidência de planejamento, use `/plan` antes da próxima alteração e revise a proposta. Uma revisão feita agora deve ser registrada como revisão final, não como planejamento anterior ao desenvolvimento. Uma tarefa pequena e real é corrigir o rótulo “Ambiente local” mostrado também no site publicado. Depois de revisar o plano e autorizar a execução, conferir a saída do hook automático e registrar o resultado real.
+
 ### MCP com SQL Server de testes
 
 Configuração baseada no [SQL MCP Server da Microsoft](https://learn.microsoft.com/en-us/azure/data-api-builder/mcp/overview). O perfil opcional `ai` do Compose de testes inicia o Data API builder com digest fixado. A porta é publicada somente em `127.0.0.1:5005`. O inicializador cria uma view de ranking de 2026 e o login `joya_mcp_reader`, com SELECT e VIEW DEFINITION apenas nessa view. A senha publicada é exclusiva deste ambiente fictício e descartável; não reutilizar na hospedagem. Ferramentas de escrita e execução de procedures estão desativadas; REST e GraphQL também.
@@ -201,4 +209,6 @@ PedidosService substituído por Application/PedidosConsultas, Application/Criaca
 
 Após a refatoração, Ian parou os serviços de testes e iniciou `docker compose --progress plain up -d --build`. O agente verificou http://localhost:8080 no navegador, com layout e listagem carregados. Consultas HTTP retornaram 200 para a página, /api/health (status ok), seis clientes, quatro produtos, seis pedidos e ranking de 2026. As duas Ana Silva permaneceram separadas por ID; totais locais do ranking: 749,50, 449,70, 299,80 e 149,90. Esta conferência final foi de leitura; criação, estoque, rollback e concorrência foram validados pelas 21 integrações da etapa C.
 
-Site público, health pela Vercel e health direto no Render responderam HTTP 200, com status ok nos dois endpoints de saúde. Isso confirma disponibilidade naquele momento, não a revisão exata implantada. O roteiro PDF do vídeo foi entregue separadamente a Ian. Permanecem gravação, acesso da avaliadora ao repositório privado/vídeo e envio. Nenhum e-mail foi enviado pelo agente. Playwright e CI continuam diferenciais não implementados; execução automática do hook e sessão em plan mode não foram demonstradas.
+Site público, health pela Vercel e health direto no Render responderam HTTP 200, com status ok nos dois endpoints de saúde. Isso confirma disponibilidade naquele momento, não a revisão exata implantada. O roteiro PDF do vídeo foi entregue separadamente a Ian. Permanecem gravação, acesso da avaliadora ao repositório público/vídeo e envio. Nenhum e-mail foi enviado pelo agente. Playwright e CI continuam diferenciais não implementados; execução automática do hook e sessão em plan mode não foram demonstradas.
+
+Repositório tornado público por Ian em 14/11/2026; confirmado pelo agente com GET não autenticado à API do GitHub (`visibility: public`, `private: false`). Não é necessário convite individual para leitura do repositório.

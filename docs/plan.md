@@ -36,3 +36,9 @@ Uma etapa por vez: implementar, testar, documentar o necessário, commit e push 
 - Etapa A concluída: Models.cs separado em entidades, contratos e regras sem alteração dos 12 tipos. Skill criar-endpoint aplicada pelo agente; hook acionado manualmente com 21 unitários aprovados após corrigir o acesso local do executor. Ian confirmou 21 integrações aprovadas, zero falhas/ignorados, resumo 7,5 s e build 8,2 s.
 - Etapa B concluída: rotas extraídas para Endpoints e erros para Middleware. Pipeline e contratos preservados. 21 unitários aprovados via hook manual e 21 integrações aprovadas por Ian, zero falhas/ignorados, resumo 11,8 s e build 12,4 s.
 - Etapa C concluída: PedidosConsultas, CriacaoPedidos e EstoquePedidos separados, com a mesma transação, SQL e contratos. 21 unitários aprovados via hook manual; 21 integrações SQL aprovadas por Ian, zero falhas/ignorados, resumo 6,9 s e build 7,4 s. Refatoração do backend concluída; revisão final da aplicação completa aprovada e entrega de vídeo/e-mail pendente.
+
+## Revisão final de automação e acesso
+
+- Repositório público confirmado pela API GitHub sem autenticação.
+- Configuração nativa `.codex/hooks.json` preparada e script adaptado a apply_patch, com eventos de vários arquivos e registro local de identificadores. Seis testes frontend, 21 unitários e caminho externo verificados manualmente. Aguardar revisão/confiança em /hooks e edição real para registrar execução automática.
+- Próxima revisão em /plan deve ser descrita como revisão final antes de uma nova alteração, sem reatribuir planejamento inicial. Tarefa sugerida: corrigir o rótulo de ambiente da UI, que hoje afirma local mesmo na hospedagem.
