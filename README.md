@@ -196,3 +196,9 @@ Rotas extraídas para Endpoints (pedidos, catálogos, relatórios e saúde) e tr
 ### Refatoração do backend - etapa C, 14/11/2026
 
 PedidosService substituído por Application/PedidosConsultas, Application/CriacaoPedidos e Data/EstoquePedidos. Serviços scoped compartilham o mesmo DbContext; CriacaoPedidos abre e confirma a transação, passando-a explicitamente à baixa. SQL parametrizado com UPDATE condicional/OUTPUT, ordem dos produtos e consultas preservados. Os testes de tradução do ranking apontam para o novo responsável. 21 unitários aprovados pelo hook manual; Ian executou 21 integrações SQL reais aprovadas, zero falhas/ignorados, resumo 6,9 s e build 7,4 s. Criação, rollback e concorrência novamente verificados.
+
+### Conferência final da aplicação completa - 14/11/2026
+
+Após a refatoração, Ian parou os serviços de testes e iniciou `docker compose --progress plain up -d --build`. O agente verificou http://localhost:8080 no navegador, com layout e listagem carregados. Consultas HTTP retornaram 200 para a página, /api/health (status ok), seis clientes, quatro produtos, seis pedidos e ranking de 2026. As duas Ana Silva permaneceram separadas por ID; totais locais do ranking: 749,50, 449,70, 299,80 e 149,90. Esta conferência final foi de leitura; criação, estoque, rollback e concorrência foram validados pelas 21 integrações da etapa C.
+
+Site público, health pela Vercel e health direto no Render responderam HTTP 200, com status ok nos dois endpoints de saúde. Isso confirma disponibilidade naquele momento, não a revisão exata implantada. O roteiro PDF do vídeo foi entregue separadamente a Ian. Permanecem gravação, acesso da avaliadora ao repositório privado/vídeo e envio. Nenhum e-mail foi enviado pelo agente. Playwright e CI continuam diferenciais não implementados; execução automática do hook e sessão em plan mode não foram demonstradas.
