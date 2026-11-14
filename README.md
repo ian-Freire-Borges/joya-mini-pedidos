@@ -133,6 +133,12 @@ Referências: https://learn.microsoft.com/en-us/sql/t-sql/statements/set-statist
 
 ## Pendências para a entrega
 
+### Validação no novo PC em 14/11/2026
+
+Checkout recuperado do GitHub no commit `0615929`, com histórico preservado. SDK local .NET 10.0.404 e Node 24.22.3: 21 testes unitários aprovados, seis testes frontend aprovados e build TypeScript/Vite aprovado pelo agente. Ian executou a integração pelo terminal do Windows, pois a sessão restrita do agente não acessa o motor Docker: 21 testes aprovados, zero falhas e zero ignorados; resumo de duração 5,9 s e build em 6,5 s. A primeira tentativa sofreu falha de infraestrutura Docker/WSL; outra tentativa do inicializador encontrou o banco ainda em recuperação. A execução final passou contra SQL Server real.
+
+Instalada no Codex local a skill oficial `aspnet-core`, da coleção `openai/skills`. Aplicação efetiva: revisão do modelo Minimal API, composição de Program.cs, DI e separação entre contratos e persistência. O projeto mantém .NET 10, DbContext scoped, ProblemDetails centralizado e a transação de estoque. A revisão orienta extrair entidades/contratos/regras, rotas e responsabilidades de consulta/escrita em etapas verificadas. Não justifica trocar a stack, adicionar bibliotecas arquiteturais ou alterar contratos. Essa skill de apoio não substitui a skill customizada versionada exigida na configuração AI First.
+
 Unitários adicionais de cliente inexistente, estoque insuficiente, produto inexistente e preservação do preço decimal executados com sucesso conforme confirmação de Ian em 13/11/2026; contagem dessa execução não informada. Após a extração das regras usadas por PedidosService, integração repetida: 21 testes aprovados, 0 falhas, 0 ignorados, aproximadamente 5,2 s; build concluído em 5,6 s. O teste unitário interpreta o resultado da baixa; atualização SQL, rollback e concorrência são verificados pela integração real.
 - Configuração AI First: CLAUDE.md, .claude/, hook, skill e uso real de MCP. Alinhar os requisitos sobre ferramentas de IA antes de alegar conformidade integral.
 - Atualizar o plano com ajustes/discordâncias efetivamente realizados; não inventar sessão Claude plan mode.

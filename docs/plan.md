@@ -15,6 +15,9 @@ Este plano foi elaborado com um agente de IA. A revisão em plan mode exigida no
 
 ## Ajustes efetivamente realizados
 
+- Retomada local em 14/11/2026: histórico recuperado no commit 0615929; 21 unitários .NET, seis testes frontend e build frontend aprovados pelo agente. Ian executou a integração Docker/SQL Server real: 21 aprovados, zero falhas e zero ignorados. Baseline confirmado antes da refatoração. A configuração AI First não estava publicada nesse checkout e continua pendente.
+- Skill oficial aspnet-core instalada no Codex e aplicada à revisão da arquitetura existente. Manter Minimal APIs, DI scoped, ProblemDetails e SQL transacional; separar responsabilidades sem introduzir novas camadas/bibliotecas. Ainda falta a skill customizada do projeto exigida no teste.
+
 - Ian pediu organização semelhante ao código do Party Time; refatorado o frontend antes de avançar na arquitetura do backend, preservando o visual.
 - Teste manual encontrou erro de tradução EF no ranking; corrigida apenas essa consulta para desbloquear a validação, com regressão ToQueryString.
 - Ian rejeitou desabilitar validação do certificado na hospedagem; diagnóstico identificou o SAN e a conexão foi corrigida mantendo validação ativa.
