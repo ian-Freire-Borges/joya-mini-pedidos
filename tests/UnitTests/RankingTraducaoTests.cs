@@ -15,7 +15,7 @@ public class RankingTraducaoTests
             .Options;
         using var db = new PedidosDb(options);
 
-        var sql = PedidosService.ConsultarRanking(db.Pedidos.AsNoTracking()).ToQueryString();
+        var sql = PedidosConsultas.ConsultarRanking(db.Pedidos.AsNoTracking()).ToQueryString();
 
         Assert.Contains("SUM(", sql);
         Assert.Contains("GROUP BY", sql);
@@ -35,7 +35,7 @@ public class RankingTraducaoTests
         var fim = RegrasPedido.Utc(new DateOnly(2027, 1, 1));
         var pedidos = db.Pedidos.Where(pedido => pedido.DataPedido >= inicio && pedido.DataPedido < fim);
 
-        var sql = PedidosService.ConsultarRanking(pedidos).ToQueryString();
+        var sql = PedidosConsultas.ConsultarRanking(pedidos).ToQueryString();
 
         Assert.Contains("WHERE", sql);
         Assert.Contains("[DataPedido] >=", sql);

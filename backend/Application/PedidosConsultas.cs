@@ -1,38 +1,9 @@
-using System.Data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
+
 namespace Pedidos.Api;
 
-public sealed class PedidosService(PedidosDb db, TimeProvider clock, ILogger<PedidosService> logger)
+public sealed class PedidosConsultas(PedidosDb db)
 {
-    public async Task<PedidoDto> Criar(CriarPedido entrada, CancellationToken ct)
-    {
-        RegrasPedido.Validar(entrada);
-        await using var tx = await db.Database.BeginTransactionAsync(ct);
-        var cliente = RegrasPedido.ExigirCliente(
-            await db.Clientes.AsNoTracking().SingleOrDefaultAsync(x => x.Id == entrada.ClienteId, ct));
-        var pedido = new Pedido { ClienteId = cliente.Id, DataPedido = clock.GetUtcNow().UtcDateTime };
-        foreach (var item in entrada.Itens!.OrderBy(x => x.ProdutoId))
-        {
-            // O predicado é reavaliado após aguardar locks concorrentes. OUTPUT captura o preço da mesma atualização.
-            await using var cmd = db.Database.GetDbConnection().CreateCommand();
-            cmd.Transaction = tx.GetDbTransaction();
-            cmd.CommandText = "UPDATE dbo.Produtos SET Estoque = Estoque - @q OUTPUT INSERTED.Preco WHERE Id = @id AND Estoque >= @q;";
-            var q = cmd.CreateParameter(); q.ParameterName = "@q"; q.DbType = DbType.Int32; q.Value = item.Quantidade; cmd.Parameters.Add(q);
-            var id = cmd.CreateParameter(); id.ParameterName = "@id"; id.DbType = DbType.Int32; id.Value = item.ProdutoId; cmd.Parameters.Add(id);
-            var resultado = await cmd.ExecuteScalarAsync(ct);
-            decimal? precoRetornado = resultado is null || resultado == DBNull.Value ? null : (decimal)resultado;
-            var produtoExiste = precoRetornado.HasValue ||
-                await db.Produtos.AsNoTracking().AnyAsync(x => x.Id == item.ProdutoId, ct);
-            var preco = RegrasPedido.ConfirmarBaixaEstoque(precoRetornado, produtoExiste);
-            pedido.Itens.Add(new ItemPedido { ProdutoId = item.ProdutoId, Quantidade = item.Quantidade, PrecoUnitario = preco });
-        }
-        db.Pedidos.Add(pedido);
-        await db.SaveChangesAsync(ct);
-        await tx.CommitAsync(ct);
-        logger.LogInformation("Pedido {PedidoId} criado para cliente {ClienteId} com {Itens} itens", pedido.Id, pedido.ClienteId, pedido.Itens.Count);
-        return (await Obter(pedido.Id, ct))!;
-    }
     public async Task<PedidoDto?> Obter(long id, CancellationToken ct)
     {
         var pedido = await db.Pedidos.AsNoTracking().Include(x => x.Cliente).Include(x => x.Itens).ThenInclude(x => x.Produto).SingleOrDefaultAsync(x => x.Id == id, ct);

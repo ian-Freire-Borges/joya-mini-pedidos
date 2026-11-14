@@ -7,7 +7,7 @@ description: Criar, alterar ou revisar endpoints da API Joya de pedidos, seguind
 
 ## Antes de alterar
 
-Leia `AGENTS.md`, `docs/spec.md` e `docs/plan.md` a partir da raiz do repositório. Confira o estado Git e o código atual: este projeto pode ter sido refatorado desde a criação da skill. Localize as rotas em `backend/Program.cs` ou em suas extensões, os contratos, `RegrasPedido`, `PedidosService` e `PedidosDb` pelos símbolos.
+Leia `AGENTS.md`, `docs/spec.md` e `docs/plan.md` a partir da raiz do repositório. Confira o estado Git e o código atual: este projeto pode ter sido refatorado desde a criação da skill. Localize as rotas em `backend/Program.cs` ou em suas extensões, os contratos, `RegrasPedido`, `PedidosConsultas`, `CriacaoPedidos`, `EstoquePedidos` e `PedidosDb` pelos símbolos.
 
 Defina o método, a rota, a entrada, a resposta e os casos de erro da mudança solicitada. Reutilize os contratos existentes quando compatíveis. Não amplie para cadastro de clientes/produtos, cancelamento ou outras funções sem pedido do usuário.
 

@@ -4,7 +4,9 @@ using Pedidos.Api;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<PedidosDb>(o => o.UseSqlServer(builder.Configuration.GetConnectionString("Pedidos") ?? throw new InvalidOperationException("ConnectionStrings__Pedidos deve ser configurada.")));
-builder.Services.AddScoped<PedidosService>();
+builder.Services.AddScoped<PedidosConsultas>();
+builder.Services.AddScoped<CriacaoPedidos>();
+builder.Services.AddScoped<EstoquePedidos>();
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();

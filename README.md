@@ -67,7 +67,8 @@ Validação observada: seis testes Node aprovados; target Docker de testes unit�
 |---|---|
 | backend/Program.cs | Composição, OpenAPI e PathBase /api |
 | backend/Endpoints; Middleware | Rotas e tratamento centralizado de erros |
-| backend/PedidosService.cs | Consultas e criação transacional |
+| backend/Application | PedidosConsultas para leituras e CriacaoPedidos para orquestração transacional |
+| backend/Data/EstoquePedidos.cs | Baixa SQL condicional na transação recebida do pedido |
 | backend/Domain/Entities; Domain/Rules | Entidades e regras do pedido |
 | backend/Contracts; PedidosDb.cs | DTOs e mapeamento EF Core |
 | database/ | Schema SQL autoritativo e seed idempotente |
@@ -182,7 +183,7 @@ Unitários adicionais de cliente inexistente, estoque insuficiente, produto inex
 - Atualizar o plano com ajustes/discordâncias efetivamente realizados; não inventar sessão em plan mode.
 - Vídeo de até dez minutos e envio do repositório/vídeo à recrutadora. Nenhum e-mail de entrega enviado.
 
-Melhorias e diferenciais: concluir extração das rotas e separação de leitura/escrita do backend; lockfile frontend; corrigir rótulo “Ambiente local” no site e metadados OpenAPI; Playwright E2E e GitHub Actions. Deploy online já existe; não comprova os obrigatórios pendentes.
+Melhorias e diferenciais: lockfile frontend; corrigir rótulo “Ambiente local” no site e metadados OpenAPI; Playwright E2E e GitHub Actions. Deploy online já existe; não comprova os obrigatórios pendentes.
 
 ### Refatoração do backend - etapa A, 14/11/2026
 
@@ -191,3 +192,7 @@ Aplicada a skill criar-endpoint para separar os 12 tipos de Models.cs em Domain/
 ### Refatoração do backend - etapa B, 14/11/2026
 
 Rotas extraídas para Endpoints (pedidos, catálogos, relatórios e saúde) e tratamento de erros para Middleware/ApiErrors.cs. Program.cs mantém composição e ordem do pipeline; /api, Location e ProblemDetails preservados. Aplicadas as skills criar-endpoint e aspnet-core. Hook manual aprovou 21 unitários. Ian executou 21 integrações SQL Server aprovadas, zero falhas/ignorados: resumo 11,8 s e build 12,4 s.
+
+### Refatoração do backend - etapa C, 14/11/2026
+
+PedidosService substituído por Application/PedidosConsultas, Application/CriacaoPedidos e Data/EstoquePedidos. Serviços scoped compartilham o mesmo DbContext; CriacaoPedidos abre e confirma a transação, passando-a explicitamente à baixa. SQL parametrizado com UPDATE condicional/OUTPUT, ordem dos produtos e consultas preservados. Os testes de tradução do ranking apontam para o novo responsável. 21 unitários aprovados pelo hook manual; Ian executou 21 integrações SQL reais aprovadas, zero falhas/ignorados, resumo 6,9 s e build 7,4 s. Criação, rollback e concorrência novamente verificados.
